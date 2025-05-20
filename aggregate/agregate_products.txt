@@ -1,0 +1,240 @@
+//MongoDB $group operator
+db.purchase.drop()
+
+db.purchase123.insertMany([ 
+    { 
+    "_id" : 1,
+    "item_name" : "Blue box",
+    "price" : 10,
+    "qty" : 15,
+    "date_of_bill" : "13/12/2015"
+    }
+    ,
+    {
+    "_id" : 2,
+    "item_name" : "Light Red box",
+    "price" : 15,
+    "qty" : 20,
+    "date_of_bill" : "05/12/2014"
+    }
+    ,
+    {
+    "_id" : 3,
+    "item_name" : "Green box",
+    "price" : 10,
+    "qty" : 30,
+    "date_of_bill" : "17/12/2016"
+    }
+    ,
+    {
+    "_id" : 4,
+    "item_name" : "White box",
+    "price" : 8,
+    "qty" : 25,
+    "date_of_bill" : "07/02/2018"
+    }
+    ,
+    {
+    "_id" : 5,
+    "item_name" : "Blue box",
+    "price" : 15,
+    "qty" : 20,
+    "date_of_bill" : "13/04/2020"
+    }
+    ,
+    {
+    "_id" : 6,
+    "item_name" : "Red box",
+    "price" : 12,
+    "qty" : 10,
+    "date_of_bill" : "05/12/2024"
+    }
+    ,
+    {
+    "_id" : 7,
+    "item_name" : "Black box",
+    "price" : 10,
+    "qty" : 30,
+    "date_of_bill" : "22/04/2019"
+    }
+    ,
+    {
+    "_id" : 8,
+    "item_name" : "Red box",
+    "price" : 8,
+    "qty" : 15,
+    "date_of_bill" : "05/12/2015"
+    }
+    ,
+    {
+    "_id" : 9,
+    "item_name" : "Green box",
+    "price" : 20,
+    "qty" : 10,
+    "date_of_bill" : "17/12/2018"
+    }
+    ,
+    {
+    "_id" : 10,
+    "item_name" : "Green box",
+    "price" : 10,
+    "qty" : 30,
+    "date_of_bill" : "13/12/2015"
+    }
+])
+
+
+// query for purchase collection find out overall
+//total =price*qty
+//avg_qty
+//sum of quantity
+// no of rewcords
+
+ db.purchase123.aggregate(  
+    [  
+       
+       {  
+         $group : {_id:null,  
+            Total_price: { $sum: { $multiply: [ "$price", "$qty" ] } },  
+            Average_qty: { $avg: "$qty" },  
+            sumofQuantity:{$sum:"$qty"},
+            no_of_records: { $sum: 1 }  
+         }  
+      }  
+   ]  
+ )
+
+ //query for each box --Light Red box,Green box",White box,Red box,Black box,Blue box
+// find out Total_price=price*qty,Average_qty,sumofQuantity,no_of_records
+ db.purchase.aggregate(  
+    [  
+       
+       {  
+         $group : {_id:"$item_name",  
+            Total_price: { $sum: { $multiply: [ "$price", "$qty" ] } },  
+            Average_qty: { $avg: "$qty" },  
+            sumofQuantity:{$sum:"$qty"},
+            no_of_records: { $sum: 1 }  
+         }  
+      }  
+   ]  
+ )
+
+//query for item_name:"Green box,findout total price=price *qty ,avgqty,
+//sum of qty  and no of times  greenbox present in collectionm
+//10*30+20*10,30*10
+//qty 30,10,30
+db.purchase.aggregate([
+    {
+        $match: { item_name: "Green box" }
+    },
+    {
+        $group: {
+            _id: "Green box",
+            Total_price_of_Green_box: { $sum: { $multiply: ["$price", "$qty"] } },
+            Green_box_Average_qty: { $avg: "$qty" },
+            Green_box_sumofQuantity: { $sum: "$qty" },
+            Green_box_no_of_records: { $sum: 1 }
+        }
+    }
+])
+
+
+//Example 1: $group
+//Iquery to   group by bill date and display these fields (total price, 
+// average quantity, and count the number of bills in the same date).
+
+//30*10,15*10
+//query --on this date -13/12/2015,, two products were sold 
+
+db.purchase.aggregate(  
+    [ 
+        {$match:{date_of_bill:"13/12/2015"}}, 
+       { 
+
+         $group : {_id :"13/12/2015",  
+            Total_price: { $sum: { $multiply: [ "$price", "$qty" ] } },  
+            Average_qty: { $avg: "$qty" }, 
+            sum_qty: { $sum: "$qty" },   
+            no_of_sales: { $sum: 1 }  
+         }  
+      }  
+   ]  
+ )
+
+//-------
+//on date 13/12/2015 - prodicts were sold Blue box and  Green box group by
+//thier item and findout total price=price*qty,avgqty,sum of qty,no of sales 
+// for each product
+db.purchase.aggregate(  
+    [ 
+        {$match:{date_of_bill:"13/12/2015"}}, 
+       { 
+
+         $group : {_id :"$item_name",  
+            Total_price: { $sum: { $multiply: [ "$price", "$qty" ] } },  
+            Average_qty: { $avg: "$qty" }, 
+            sum_qty: { $sum: "$qty" },   
+            no_of_sales: { $sum: 1 }  
+         }  
+      }  
+   ]  
+ )
+
+
+---------
+
+//query on match- particular date "05/12/2014".group by date_of_bill and item_name
+//find out Total_price=price*quantity,Average_qty,no_of_records
+
+    db.purchase.aggregate(  
+        [  
+         {   
+         $match : { date_of_bill : "05/12/2014"}  
+         },  
+           {  
+                $group : {_id : { date_of_bill : "$date_of_bill ", item : "$item_name"}, 
+                Total_price: { $sum: { $multiply: [ "$price", "$qty" ] } },  
+                Average_qty: { $avg: "$qty" },  
+                 no_of_records: { $sum: 1 }  
+             }  
+          }  
+       ]  
+     )
+     //or
+     
+     db.purchase.aggregate(  
+        [  
+         {   
+         $match : { date_of_bill : "05/12/2014"}  
+         },  
+           {  
+                $group : {_id : {  item : "$item_name"}, 
+                Total_price: { $sum: { $multiply: [ "$price", "$qty" ] } },  
+                Average_qty: { $avg: "$qty" },  
+                 no_of_records: { $sum: 1 }  
+             }  
+          }  
+       ]  
+     )
+
+//-------
+// query between dates>=05/12/2014 and dates<=13/04/2020".
+//findout  which products were sold group by item_name,
+//findout Total_price,Average_qty,no_of_records
+
+
+db.purchase.aggregate(  
+    [  
+     {   
+     $match : { date_of_bill :{$gte: "05/12/2014",$lte:"13/04/2020"}}  
+     },  
+       {  
+            $group : {_id : {  item : "$item_name"}, 
+            Total_price: { $sum: { $multiply: [ "$price", "$qty" ] } },  
+            Average_qty: { $avg: "$qty" },  
+             no_of_records: { $sum: 1 }  
+         }  
+      }  
+   ]  
+ )

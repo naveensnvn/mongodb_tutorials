@@ -1,0 +1,229 @@
+//The $size operator matches any array with the number of elements specified by the argument.
+//db.collection.find( { field: { $size: 3 } } );
+
+db.products.drop()
+db.products.insertMany([
+	{ "_id" : 1, "name" : "IPhone", "price" : 799, "releaseDate" : ISODate("2011-05-14T00:00:00Z"), "spec" : { "ram" : 4, "screen" : 6.5, "cpu" : 2.66 }, "color" : [ "white", "black" ], "storage" : [ 64, 128, 256 ] },
+	{ "_id" : 2, "name" : "xTablet", "price" : 899, "releaseDate" : ISODate("2011-09-01T00:00:00Z"), "spec" : { "ram" : 16, "screen" : 9.5, "cpu" : 3.66 }, "color" : [ "white", "black", "purple" ], "storage" : [ 128, 256, 512 ] },
+	{ "_id" : 3, "name" : "Redmi Note Pro", "price" : 899, "releaseDate" : ISODate("2015-01-14T00:00:00Z"), "spec" : { "ram" : 12, "screen" : 9.7, "cpu" : 3.66 }, "color" : [ "blue" ], "storage" : [ 16, 64, 128 ] },
+	{ "_id" : 4, "name" : "Vivo", "price" : 699, "releaseDate" : ISODate("2020-05-14T00:00:00Z"), "spec" : { "ram" : 8, "screen" : 9.7, "cpu" : 1.66 }, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256, 1024 ] },
+	{ "_id" : 5, "name" : "Samsung", "price" : 599, "releaseDate" : ISODate("2022-09-14T00:00:00Z"), "spec" : { "ram" : 4, "screen" : 9.7, "cpu" : 1.66 }, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256 ] },
+	{ "_id" : 6, "name" : "Oppo", "spec" : { "ram" : 64, "screen" : 9.7, "cpu" : 3.66 }, "color" : [ "black" ], "storage" : [ 1024 ] }
+])
+
+//The following example uses the $size operator to select documents whose color array has two elements:
+db.products.find(
+    {color:{$size:2}},
+    {name:1,color:1,price:1,color:1}
+)
+// demonstrate use of size along with or operator
+db.products.find(
+    {
+    $or: [
+        { color: { $size: 1} },
+        {color: { $size: 2}}
+    ]
+},
+ {name: 1,color: 1,price:1,spec:1}
+)
+
+//#Create Collection
+db.students.drop()
+
+db.students.insertMany([
+    { 
+        _id:1,
+        name: "Laksmi",
+        subjects: [ "python" ],
+        marks: [ 75, 80, 90 ]
+    },
+    { 
+       _id:2,
+        name: "Shifa Banu",
+        subjects: [ "c++", "java", "python" ],
+        marks: [ 95, 80 ]
+    },
+    { 
+       _id:3,
+        name: "Deepika",
+        subjects: [ "csharp", "perl" ],
+        marks: [ 91 ]
+    },
+    { 
+        _id:4,
+        name: "Akash",
+        subjects: [ "php" ],
+        marks: [ 70, 80, 90]
+    }
+])
+//The following example uses the $size operator to select documents whose marks array has three elements:
+db.students.find({ "marks": { "$size":3 } })
+
+//3. Using the $where operator to find array size greater than 1
+db.students.find({ $where: "this.marks.length > 1" })
+
+//4. Using the Aggregation Framework with the $match 
+//Using the aggregation framework is another way to identify 
+// the array where the size is greater than 1. Here in the
+//  query, we have used the aggregate() method with the 
+// $match stage. The $match stage filters documents based on 
+// the size of the array subjects. The $exists operator 
+// checks whether the second element of the array exists. 
+// Here, we are using subject.1 to refer to the second element 
+// of the array, since MongoDB uses zero-based indexing.
+
+// Usage of aggregation framework
+db.students.aggregate([
+
+  { $match: { "subjects.1": { $exists: true } } }
+])
+
+
+db.students_details.drop()
+
+db.students_details.insertMany([ 
+    {
+    "_id" : 1,
+    "name" : "Sachin",
+    "class" : "X",
+    "rollNo" : 401,
+    "age" : 18,
+    "marks" : [ 55, 60, 70, 45, 95, 68 ],
+    "extraMarks" : 
+    {
+    "practical" : [ 21, 18, 25, 30 ],
+    "attendance" : [ 5, 9 ]
+    },
+    "gender" : "Male",
+    "bloodgroup" : "A+"
+    }
+    ,
+    {
+    "_id" : 2,
+    "name" : "ajay",
+    "class" : "IX",
+    "rollNo" : 35,
+    "age" : 17,
+    "marks" : [ 85, 40, 90, 75, 85, 77 ],
+    "gender" : "Male",
+    "bloodgroup" : "B+"
+    }
+    ,
+    {
+    "_id" : 3,
+    "name" : "Maheshwari",
+    "class" : "IX",
+    "rollNo" : 49,
+    "age" : 17,
+    "marks" : [ 85, 70, 80, 95, 94, 81 ],
+    "gender" : "Female",
+    "bloodgroup" : "O+"
+    }
+    ,
+    {
+    "_id" : 4,
+    "name" : "Ayyan sharief",
+    "class" : "X",
+    "rollNo" : 61,
+    "age" : 18,
+    "marks" : [ 91, 65, 71, 63, 98, 76 ],
+    "extraMarks" : 
+    {
+    "practical" : [ 26, 28, 25, 29 ],
+    "attendance" : [ 8, 8 ]
+    }
+    ,
+    "gender" : "Male",
+    "bloodgroup" : "A+"
+    }
+    ,
+    {
+    "_id" : 5,
+    "name" : "Megha",
+    "class" : "IX",
+    "rollNo" : 308,
+    "age" : 17,
+    "marks" : [ 97, 98, 95, 98 ],
+    "gender" : "Female",
+    "bloodgroup" : "B+"
+    }
+    ,
+    {
+    "_id" : 6,
+    "name" : "Sunil Kumar",
+    "class" : "IX",
+    "rollNo" : 75,
+    "age" : 18,
+    "marks" : [ 99, 98, 98, 95, 96 ],
+    "gender" : "Male",
+    "bloodgroup" : "A+"
+    }
+])
+ 
+//how to filter documents where the size of the numbers1 array is greater than 2.
+ db.students.aggregate([
+    { $match: { $expr: { $gt: [{ $size: "$marks" }, 2] } } }
+ ])
+
+
+// genral queries
+ db.inventory.insertMany([
+    { item: "doc", qty: 25, tags: ["black", "red"], dim_cm: [ 14, 21 ] },
+    { item: "book", qty: 10, tags: ["red", "black"], dim_cm: [ 14, 21 ] },
+    { item: "planner", qty: 15, tags: ["black", "red"], dim_cm: [ 22.85, 30 ] },
+    { item: "card", qty: 45, tags: ["green"], dim_cm: [ 10, 15.25 ] }
+    ]);
+
+ //demo how to use all operator
+    db.inventory.find( { tags: ["red", "black"] } )
+
+    db.inventory.find( { tags: { $all: ["red", "black"] } } )'
+
+    //You can query if the given array field has at least one element with the provided data 
+    // using the filter { <field>:<value> } where <value> refers to the element value.
+    db.inventory.find( { tags: "red" } )
+
+  //  Example 3- Specify Multiple Conditions for Array Elements
+  db.inventory.find( { dim_cm: { $gt: 15, $lt: 20 } } )
+ 
+  db.inventory2.insertMany( [
+    { item: "doc", instock: [ { workshop: "A", qty: 5 }, { workshop: "C", qty: 15 } ] },
+    { item: "book", instock: [ { workshop: "C", qty: 5 } ] },
+    { item: "b_planner", instock: [ { workshop: "A", qty: 40 }, { workshop: "B", qty: 5 } ] },
+    { item: "card", instock: [ { workshop: "B", qty: 15 }, { workshop: "C", qty: 35 } ] }
+    ]);
+    
+    // query to find  instock.workshop='A' AND qty=5 
+    db.inventory2.find( { "instock": { workshop: "A", qty: 5 } } )
+
+ // query to find  instock.workshop='A' AND qty=5 using using elemMatch
+    db.inventory2.find({ "instock": { $elemMatch: { qty: 5, workshop: "A" } } })
+
+//Example 2- Specify a Condition on a Field in an Array of Documents
+db.inventory2.find( { 'instock.0.qty': { $lte: 25 } } )
+ 
+//Example 3- Match an Embedded/Nested Document
+db.inventory.insertMany( [
+    { item: "doc", qty: 65, size: { h: 84, w: 11, unit: "in" }, status: "C" },
+    { item: "book", qty: 40, size: { h: 9.5, w: 10, unit: "cn" }, status: "A" },
+    ]);
+    
+    db.inventory.find( { size: { h: 84, w: 11, unit: "in" } } )
+    
+
+    db.productsdesc.insertMany([ 
+        { "_id" : 2, "item" : "Chairs", "description" : "product 2", colors: [ "purple" ] },
+        { "_id" : 3, "item" : "Podiums", "description" : "product 3", colors: [ ] },
+        { "_id" : 4, "item" : "Desks", "description" : "product 4 - missing colors" },
+        { "_id" : 5, "item" : "Staff Table", "description" : "product 5 - colors is string", colors: "blue,red" }
+        ])
+        
+        //use of aggregate with isArray and if and then condition
+        db.productsdesc.aggregate([
+            {
+               $project: {
+                  item: 1,
+                  numberOfColors: { $cond: { if: { $isArray: "$colors" }, then: { $size: "$colors" }, else: "NA"} }
+               }
+            }
+         ] )

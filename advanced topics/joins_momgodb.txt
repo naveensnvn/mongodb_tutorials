@@ -1,0 +1,731 @@
+//Use a View to Join Two Collections
+//You can use $lookup to create a view over two collections and then run queries against the view.
+//  Applications can query the view without having to construct or maintain complex pipelines.
+db.inventory.drop()
+db.orders.drop()
+
+db.inventory.insertMany( [
+    { prodId: 100,product_name:"Laptops-Dell",price: 20, quantity: 125 },
+    { prodId: 101,product_name:"Laptops-HP", price: 10, quantity: 234 },
+    { prodId: 102,product_name:"Laptops-Lenovo", price: 15, quantity: 432 },
+    { prodId: 103,product_name:"Laptops-acer",  price: 17, quantity: 320 }
+ ] )
+
+ db.orders.insertMany( [
+    { orderId: 201, custid: 301, prodId: 100, numPurchased: 20 },
+    { orderId: 202, custid: 302, prodId: 101, numPurchased: 10 },
+    { orderId: 203, custid: 303, prodId: 102, numPurchased: 5 },
+    { orderId: 204, custid: 303, prodId: 103, numPurchased: 15 },
+    { orderId: 205, custid: 303, prodId: 103, numPurchased: 20 },
+    { orderId: 206, custid: 302, prodId: 102, numPurchased: 1 },
+    { orderId: 207, custid: 302, prodId: 101, numPurchased: 5 },
+    { orderId: 208, custid: 301, prodId: 100, numPurchased: 10 },
+    { orderId: 209, custid: 303, prodId: 103, numPurchased: 30 }
+ ] )
+
+
+//This command uses db.createView() to create a new view named sales based on the orders collection:
+db.createView( "sales124", "orders", [
+   {
+      $lookup:
+         {
+            from: "inventory",
+            localField: "prodId",
+            foreignField: "prodId",
+            as: "inventoryDocs"
+         }
+   },
+   {
+      $project:
+         {
+           _id: 0,
+           prodId: 1,
+           product_name:1,
+           orderId: 1,
+           numPurchased: 1,
+           price: "$inventoryDocs.price"
+         }
+   },
+      { $unwind: "$price" }
+] )
+//In the example:
+
+//The $lookup stage uses the prodId field in the orders collection to "join" documents in the inventory collection that have matching prodId fields.
+
+//The matching documents are added as an array in the inventoryDocs field.
+
+//The $project stage selects a subset of the available fields.
+
+//The $unwind stage converts the price field from an array to a scalar value.
+
+db.sales124.find()
+
+db.sales124.aggregate( [
+    {
+       $group:
+          {
+             _id: "$prodId",
+             amountSold: { $sum: { $multiply: [ "$price", "$numPurchased" ] } }
+          }
+    }
+ ] )
+
+ //example2
+ db.orders2.drop()
+ db.inventory2.drop()
+
+ db.orders2.insertMany( [
+    { "_id" : 1, "item" : "almonds", "price" : 12, "quantity" : 2 },
+    { "_id" : 2, "item" : "pecans", "price" : 20, "quantity" : 1 },
+    { "_id" : 3  }
+ ] )
+ 
+ db.inventory2.insertMany( [
+    { "_id" : 1, "product_name" : "almonds", "description": "product 1", "instock" : 120 },
+    { "_id" : 2, "product_name" : "bread", "description": "product 2", "instock" : 80 },
+    { "_id" : 3, "product_name" : "cashews", "description": "product 3", "instock" : 60 },
+    { "_id" : 4, "product_name" : "pecans", "description": "product 4", "instock" : 70 },
+    { "_id" : 5, "product_name": null, "description": "Incomplete" },
+    { "_id" : 6 }
+ ] )
+ db.orders2.aggregate( [
+    {
+      $lookup:
+        {
+          from: "inventory2",
+          localField: "item",
+          foreignField: "product_name",
+          as: "inventory_docs"
+        }
+   }
+ ] )
+
+ //ex3
+ db.classes.insertMany( [
+    { _id: 1, title: "Reading is ...", enrollmentlist: [ "giraffe2", "pandabear", "artie" ], days: ["M", "W", "F"] },
+    { _id: 2, title: "But Writing ...", enrollmentlist: [ "giraffe1", "artie" ], days: ["T", "F"] }
+ ] )
+ db.members.insertMany( [
+    { _id: 1, name: "artie", joined: new Date("2016-05-01"), status: "A" },
+    { _id: 2, name: "giraffe", joined: new Date("2017-05-01"), status: "D" },
+    { _id: 3, name: "giraffe1", joined: new Date("2017-10-01"), status: "A" },
+    { _id: 4, name: "panda", joined: new Date("2018-10-11"), status: "A" },
+    { _id: 5, name: "pandabear", joined: new Date("2018-12-01"), status: "A" },
+    { _id: 6, name: "giraffe2", joined: new Date("2018-12-01"), status: "D" }
+ ] )
+ //The following operation joins “members” and “classes” on members field to name field:
+ db.classes.aggregate( [
+    {
+       $lookup:
+          {
+             from: "members",
+             localField: "enrollmentlist",
+             foreignField: "name",
+             as: "enrollee_info"
+         }
+    }
+ ] )
+//  https://www.dangeabunea.com/blog/creating-inner-join-and-left-join-lookup-views-in-mongodb-a-step-by-step-guide
+ //exampl 4
+ //Creating Inner Join And Left Join Lookup Views in MongoDB: A Step-by-Step Guide
+ // Populating the aircraft collection
+db.aircraft.insertMany([
+    { id: 1, model: 'Boeing 737', range: 3500, airline: 'Airline A' },
+    { id: 2, model: 'Airbus A320', range: 3000, airline: 'Airline B' }
+  ]);
+  
+  // Populating the flights collection
+  db.flights.insertMany([
+    { id: 101, from: 'London', to: 'Chicago', aircraftId: 1, departureDate: ISODate('2023-08-15') },
+    { id: 102, from: 'Paris', to: 'New York', aircraftId: 2, departureDate: ISODate('2023-08-16') },
+    { id: 103, from: 'Amsterdeam', to: 'Los Angeles', aircraftId: 3, departureDate: ISODate('2023-08-17') }
+  ]);
+
+ // Inner Join Lookup View
+//Switching gears to the inner join scenario, we can achieve this by once again using the $lookup stage coupled with $unwind, followed by a filtering $match stage:
+
+db.createView("innerJoinView1", "flights", [
+  {
+    $lookup: {
+      from: "aircraft",
+      localField: "aircraftId",
+      foreignField: "id",
+      as: "aircraftInfo"
+    }
+  },
+  {
+    $unwind: "$aircraftInfo"
+  },
+  {
+    $match: { aircraftInfo: { $exists: true } }
+  },
+  {
+    $project: {
+      from: 1,
+      to: 1,
+      departureDate:1,
+      aircraftModel: "$aircraftInfo.model",
+      airline: "$aircraftInfo.airline"
+    }
+  }
+]);  https://www.dangeabunea.com/blog/creating-inner-join-and-left-join-lookup-views-in-mongodb-a-step-by-step-guide
+      as: "aircraftInfo"
+    }
+  },
+  {
+    $unwind: "$aircraftInfo"
+  },
+  {
+    $project: {
+      from: 1,
+      to: 1,
+      aircraftModel: "$aircraftInfo.model",
+      airline: "$aircraftInfo.airline"
+    }
+  }
+]);
+//In this succinct example, the $unwind stage gracefully flattens the aircraftInfo array, 
+// allowing us to access the fields directly within the subsequent stages.
+
+db.leftJoinView.find({})
+
+
+//Default Values in Left Join Lookup
+//To handle instances where there are no matching entries in the aircraft collection,
+//  we can incorporate the $ifNull operator, maintaining the elegance of the $unwind operation:
+db.createView("leftJoinDefaultView", "flights", [
+    {
+      $lookup: {
+        from: "aircraft",
+        localField: "aircraftId",
+        foreignField: "id",
+        as: "aircraftInfo"
+      }
+    },
+    {
+      $unwind: { path: "$aircraftInfo", preserveNullAndEmptyArrays: true }
+    },
+    {
+      $project: {
+        from: 1,
+        to: 1,
+        aircraftModel: { $ifNull: ["$aircraftInfo.model", "Unknown Model"] },
+        airline: { $ifNull: ["$aircraftInfo.airline", "Unknown Airline"] }
+      }
+    }
+  ]);
+  //By utilizing $unwind with the preserveNullAndEmptyArrays option, we gracefully handle scenarios where
+  //  there are no matches in the aircraft collection while the $ifNull operator assigns default values.
+
+ // Perform a Single Equality Join with $lookup
+  //Create a collection orders with these documents:
+  db.orders1.insertMany( [
+    { "_id" : 1, "item" : "almonds", "price" : 12, "quantity" : 2 },
+    { "_id" : 2, "item" : "pecans", "price" : 20, "quantity" : 1 },
+    { "_id" : 3  }
+ ] )
+
+
+ db.inventory1.insertMany( [
+    { "_id" : 1, "sku" : "almonds", "description": "product 1", "instock" : 120 },
+    { "_id" : 2, "sku" : "bread", "description": "product 2", "instock" : 80 },
+    { "_id" : 3, "sku" : "cashews", "description": "product 3", "instock" : 60 },
+    { "_id" : 4, "sku" : "pecans", "description": "product 4", "instock" : 70 },
+    { "_id" : 5, "sku": null, "description": "Incomplete" },
+    { "_id" : 6 }
+ ] )
+
+ db.orders.aggregate( [
+    {
+      $lookup:
+        {
+          from: "inventory1",
+          localField: "item",
+          foreignField: "sku",
+          as: "inventory_docs"
+        }
+   }
+ ] )
+
+//A left-outer join is an operation that returns all data from the left table and only matching data from the right table.
+//In the context of MongoDB, a left-outer join returns all data from the left collection and any matching data from the right collection. 
+// If there is no matching data in the right collection, only data from the left collection is returned.
+
+
+db.company.insertMany([
+    {
+        "_id": 1,
+        "companyName": "Mindtreee",
+        "email": "akash0@gmail.com",
+        "isRegistered": true
+    },
+    {
+        "_id": 2,
+        "companyName": "SkillTech",
+        "email": "shreyas@@gmail.com",
+        "isRegistered": true
+    },
+    {
+        "_id": 3,
+        "companyName": "Yahoo",
+        "email": "kavan@@gmail.com",
+        "isRegistered": true
+    },
+    {
+        "_id": 4,
+        "companyName": "Meta",
+        "email": "Laksmi@gmail.com",
+        "isRegistered": false
+    },
+    {
+        "_id": 5,
+        "companyName": "google",
+        "email": "suchithra@gmail.com",
+        "isRegistered": false
+    },
+    {
+        "_id": 6,
+        "companyName": "HCL",
+        "email": "Kashifa@gmail.com",
+        "isRegistered": false
+    },
+    {
+        "_id": 7,
+        "companyName": "INFOSYS",
+        "email": "Mohammed Umar@gmail.com",
+        "isRegistered": false
+    },
+    {
+        "_id": 8,
+        "companyName": "IBM",
+        "email": "Ruthvi@gmail.com",
+        "isRegistered": false
+    },
+    {
+        "_id": 9,
+        "companyName": "wipro ",
+        "email": "Sifa Banu@gmail.com",
+        "isRegistered": true
+    },
+    {
+        "_id": 10,
+        "companyName": "Intel",
+        "email": "Ayesha @gmail.com",
+        "isRegistered": false
+    }
+])
+
+
+
+
+db.service.insertMany([
+    {
+        "_id": 1,
+        "companyId": "886076c1-af54-46bf-9afd-d50c50543456",
+        "serviceName": "Rebar & Wire Mesh Install",
+        "isActive": true
+    },
+    {
+        "_id":2,
+        "companyId": "4f6f50a8-51bf-4435-89ed-f421707bea9e",
+        "serviceName": "Wall Protection",
+        "isActive": true
+    },
+    {
+        "_id": "af3e867b-633a-44b3-8a8d-9ddda2320bba",
+        "companyId": "bd69948e-904c-4f56-a129-945ea829108e",
+        "serviceName": "Epoxy Flooring",
+        "isActive": true
+    },
+    {
+        "_id": "662883be-0e0a-4e80-92cc-7a45d8984006",
+        "companyId": "818d73bc-46f8-497d-9ae4-ac71508f81f1",
+        "serviceName": "Masonry",
+        "isActive": true
+    },
+    {
+        "_id": "5bec5ef0-6449-40c5-b097-27b330415757",
+        "companyId": "f6fc009a-ac8e-433a-b47e-855abe246f1b",
+        "serviceName": "Plumbing & Medical Gas",
+        "isActive": true
+    },
+    {
+        "_id": "fe04f4f1-27e1-421b-abe8-06f415136421",
+        "companyId": "e15015cc-0e9a-4fd9-9246-b51dc6f22f89",
+        "serviceName": "Casework",
+        "isActive": true
+    },
+    {
+        "_id": "0d2db760-9b5c-4fa2-be0f-f6acb251e7de",
+        "companyId": "90900c9b-3b1e-4151-829c-0ca365220188",
+        "serviceName": "Exterior Signage",
+        "isActive": true
+    }
+])
+
+//Some points about the data we just added to our collections.
+
+//There are 10 companies. 4 out of the 10 companies are registered.
+//There are 7 services offered by these companies and all services are active
+
+
+// ex 5
+https://sparkbyexamples.com/mongodb/mongodb-sql-join-with-examples/
+
+//Create 'Books' collection
+db.Books.insertMany([
+ { "_id" : 1, "author_id" : 1, "title": "Learn Git", "price" : 100 },
+ { "_id" : 2, "author_id" : 2, "title": "Learning Python", "price" : 200 },
+ { "_id" : 3, "author_id" : 1, "title": "Let us  C", "price" : 300 },
+ { "_id" : 4, "author_id" : 3, "title": "Dbms", "price" : 400 }
+ ])
+// #Create 'Authors' collection
+ db.Authors.insertMany([
+  { "_id" : 1, "name" : "Scott Chacon" },
+  { "_id" : 2, "name" : " Eric Matthes" },
+  { "_id" : 3, "name" : "Yashavant Kanetkar" }
+  ])
+
+  //Join two collections using $lookup operator equi join
+db.Books.aggregate([
+   {
+      $lookup:
+         {
+           from: "Authors",
+           localField: "author_id",
+           foreignField: "_id",
+           as: "AuthorDetail"
+         }
+   }
+])
+
+//3. MongoDB Recursive Join Example with $graphlookup stage
+//We can perform a recursive join on a collection using the $graphlookup stage of MongoDB that represents a tree or graph structure. 
+// Also, we have performed the query that will return all documents from the Books collection, along with a new field called Book_Details, 
+// which is an array of documents that represent the hierarchy for each book, including themselves.
+
+//ote that the startWith parameter is set to $_id, which means that we start the traversal from the _id field of each document in the collection.
+
+//Moreover, the connectFromField is assigned with _id, which is the field in the Books collection that connects to the connectToField, 
+// which is book_id. Also, the as parameter sets the name of the field that will contain the result of the $graphLookup operation.
+
+//$graphLookup usage
+db.Books.aggregate([
+   {
+      $graphLookup:
+         {
+           from: "Books",
+           startWith: "$_id",
+           connectFromField: "book_id",
+           connectToField: "_id",
+           as: "Book_Details"
+         }
+   }
+])
+
+db.users.drop()
+
+ db.users.insertMany([ 
+{ "_id" : ObjectId("5c7997e7ad685885625abce3"), "userId" : 1, "name" : "Arvind" },
+{ "_id" : ObjectId("5c7997e7ad685885625abce4"), "userId" : 2, "name" : "Bharath" },
+{ "_id" : ObjectId("5c7997e7ad685885625abce5"), "userId" : 3, "name" : "Mysore" }
+
+])
+
+
+db.cities.drop()
+
+db.cities.insertMany([ 
+{ "_id" : ObjectId("5c7997edad685885625abceb"), "userId" : 1, "City" : "Bangalore" },
+{ "_id" : ObjectId("5c7997edad685885625abcec"), "userId" : 1, "City" : "Mysuru" },
+{ "_id" : ObjectId("5c7997edad685885625abced"), "userId" : 2, "City" : "Mangalore" },
+{ "_id" : ObjectId("5c7997edad685885625abcee"), "userId" : 3, "City" : "Hubli." }
+])
+
+db.users.aggregate([
+   {
+     $lookup:
+       {
+         from: "cities",
+         localField: "userId",
+         foreignField: "userId",
+         as: "combined"
+       }
+  }
+])
+//It’s also possible to perform left outer join and 
+// right outer join in MongoDB. A left outer join can be done by using the $lookup stage followed by a $unwind stage, like this:
+
+db.podcasts.insertMany([
+	{id: 1, name: "Off The Clock", category: "Technology", rss: "https://anchor.fm/s/76aafa5c/podcast/rss"},
+	{id: 2, name: "Tech Over Tea", category: "Technology", rss: "https://anchor.fm/s/149fd51c/podcast/rss"}
+]);
+
+db.episodes.insertMany([
+	{podcast_id: 1, title: "Resume Tips", published_on: "2022-01-11"},
+	{podcast_id: 2, title: "#75 Welcome Our Hacker Neko Waifu | Cyan Nyan", published_on: "2021-08-04"},
+	{podcast_id: 2, title: "Square Enix Refuses To Take My Money | Solo", published_on: "2022-01-26"},
+	{podcast_id: 1, title: "Find the Right Job", published_on: "2022-01-25"}
+]);
+//f you want to get every podcast with all of its associated episodes, you can accomplish this using the $lookup aggregation stage.
+
+//The aggregation would look something like this:
+db.podcasts.aggregate([
+	{ $lookup: {
+		from: "episodes", // Name of the other collection to "join" from
+		localField: "id", // Name of the field your current documents contain to compare with
+		foreignField: "podcast_id", // Name of field to compare to in the "from" collection's documents
+		as: "episodes" // What to call the field that contains the array of sub documents that matched
+	}}
+]);
+
+
+//ex6
+
+db.orders123.drop()
+db.orders123.insertMany([ 
+{"_id" : 1.0, "item" : 1.0, "price" : 49.99, "qty" : 1.0},
+{"_id" : 2.0, "item" : 1.0, "price" : 49.99, "qty" : 3.0},
+{"_id" : 3.0, "item" : 2.0, "price" : 99.99, "qty" : 1.0}
+])
+
+db.products123.drop()
+
+db.products123.insertMany([
+{"_id" : 1.0, "name" : "Pencil", "price" : 49.99},
+{"_id" : 2.0, "name" : "Eraser", "price" : 99.99},
+{"_id" : 3.0, "name" : "Scale", "price" : 199.99}
+])
+
+
+db.orders123.aggregate({
+    $lookup:
+        {
+            from: "products123",
+            localField: "item",
+            foreignField : "_id",
+            as: "ordered_product"
+        }
+    })
+
+//In this case order items are in array which
+//required to unwind using $unwind operator which will create separate
+//document per item and then you can perform lookup. Script may look like below.
+
+db.orders123.aggregate([
+    {
+       $unwind: "$item"
+    },
+    {
+     $lookup:
+         {
+             from: "products123",
+             localField: "item.product",
+             foreignField : "_id",
+             as: "ordered_product"
+         }
+     }
+ ])
+
+
+ //You may not want to use $lookup operator to get all orders for a particular product in other word join orders on
+//product. In case of best selling product we might have thousands order and all added within single array may cause
+//document size limit array.
+//ex 
+db.products.drop()
+db.products.insertMany([
+    {
+      "id": "A1",
+      "name": "Asus Laptop",
+      "category": "ELECTRONICS",
+      "description": "Good value laptop for students",
+    },
+    {
+      "id": "Z9",
+      "name": "The Day Of The Triffids",
+      "category": "BOOKS",
+      "description": "Classic post-apocalyptic novel",
+    },
+    {
+      "id": "FF",
+      "name": "Morphy Richardds Food Mixer",
+      "category": "KITCHENWARE",
+      "description": "Luxury mixer turning good cakes into great",
+    },
+    {
+      "id": "PQ",
+      "name": "Karcher Hose Set",
+      "category": "GARDEN",
+      "description": "Hose + nozzles + winder for tidy storage",
+    },
+  ]); 
+  db.orders.drop()
+  db.orders.insertMany([
+    {
+      "customer_id": "elise_smith@myemail.com",
+      "orderdate": ISODate("2020-05-30T08:35:52Z"),
+      "product_id": "A1",
+      "value": NumberDecimal("431.43"),
+    },
+    {
+      "customer_id": "tj@wheresmyemail.com",
+      "orderdate": ISODate("2019-05-28T19:13:32Z"),
+      "product_id": "Z9",
+      "value": NumberDecimal("5.01"),
+    },  
+    {
+      "customer_id": "oranieri@warmmail.com",
+      "orderdate": ISODate("2020-01-01T08:25:37Z"),
+      "product_id": "FF",
+      "value": NumberDecimal("63.13"),
+    },
+    {
+      "customer_id": "jjones@tepidmail.com",
+      "orderdate": ISODate("2020-12-26T08:55:46Z"),
+      "product_id": "A1",
+      "value": NumberDecimal("429.65"),
+    },
+  ]);
+
+  db.orders.aggregate([
+    // Match only orders made in 2020
+    {$match: { "orderdate":
+         {
+        $gte: ISODate("2020-01-01T00:00:00Z"),
+        $lt: ISODate("2021-01-01T00:00:00Z")
+      }
+    }}
+])
+  
+    // Join "product_id" in orders collection to "id" in products" collection
+    db.orders.aggregate([  
+    {$lookup: {
+      "from": "products",
+      "localField": "product_id",
+      "foreignField": "id",
+      "as": "product_mapping",
+    }}
+])
+  
+    // For this data model, will always be 1 record in right-side
+    // of join, so take 1st joined array element
+    db.orders.aggregate([  
+    {"$set": {
+      "product_mapping": {"$first": "$product_mapping"},
+    }}
+])
+db.orders.aggregate([  
+    // Extract the joined embeded fields into top level fields
+    {"$set": {
+      "product_name": "$product_mapping.name",
+      "product_category": "$product_mapping.category",
+    }}
+])
+db.orders.aggregate([  
+    // Omit unwanted fields
+    {"$unset": [
+      "_id",
+      "product_id",
+      "product_mapping"
+    ]}    
+  ])
+
+  //example 7
+
+  db.orders12.insertMany([
+   
+    { 
+        "_id": ObjectId("61b97cbfc547a8462e94b20c"), 
+        "order_id": "ORD-001",
+        "order_date": ISODate("2022-12-15T00:00:00Z"),
+        "customer_id": ObjectId("61b97cbfc547a8462e94b20d"),
+        "total_amount": 1000  
+    },  
+    {    
+        "_id": ObjectId("61b97cbfc547a8462e94b20e"),
+        "order_id": "ORD-002",
+        "order_date": ISODate("2022-12-16T00:00:00Z"),
+        "customer_id": ObjectId("61b97cbfc547a8462e94b20f"),
+        "total_amount": 2000
+    }
+])
+
+db.customer.insertMany([ 
+    {
+      "_id": ObjectId("61b97cbfc547a8462e94b20d"),
+      "name": "Bharat",
+      "email": "Bharat@gmail.com",
+      "phone": "8746989457"
+    },
+    {
+      "_id": ObjectId("61b97cbfc547a8462e94b20f"),
+      "name": "Ajay",
+      "email": "Ajay@gmail.com",
+      "phone": "9248863808"
+    }
+])
+
+db.orders.aggregate([
+    {
+       $lookup:
+          {
+            from: "customer12",
+            localField: "customer_id",
+            foreignField: "_id",
+            as: "customer12"
+          }
+    }
+ ])
+ //does not work
+
+ db.orders.aggregate([
+    {
+      $match: { order_date: { $gt: ISODate('2022-01-01') } }
+    },
+    {
+      $lookup: {
+        from: 'customers',
+        localField: 'customer_id',
+        foreignField: '_id',
+        as: 'customer'
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        order_id: 1,
+        order_date: 1,
+        total_amount: 1,
+        'customer. the name': 1,
+        'customer. email': 1,
+        'customer. phone' :0,
+        'customer._id' :0
+        
+      }
+    }
+  ])
+ //does not work
+
+  db.orders.aggregate([
+    {
+       $lookup:
+          {
+            from: "customers",
+            localField: "customer_id",
+            foreignField: "_id",
+            as: "customer"
+          }
+    },
+    {
+       $match:
+          {
+            total_amount: { $gte: 1000, $lte: 2000 }
+          }
+    }
+ ])
+
+// https://www.analyticsvidhya.com/blog/2023/07/simple-techniques-to-perform-join-operations-in-mongodb/
+//
+
+
+

@@ -1,0 +1,306 @@
+se movies
+
+db.createCollection("movies")
+
+db.movies.drop()
+
+
+db.movies.insertMany( [
+    { 
+        _id: 1, 
+        "name": "The Avengers",
+        "release_year": "2012",
+        "rating": 8,
+        "starring": ["Robert  Jr","Chris Evans","Chris H"],
+        "runtime": 120,
+        "totalReviews": 2012,
+        "director": "Joss W"
+    },
+    { 
+        
+        _id: 2, 
+        "name": "The Good, the Bad and the Ugly",
+        "release_year": "1966",
+        "rating": 8.8,
+        "starring": ["Clint Eastwood","Lee Van"],
+        "runtime": 120,
+        "totalReviews": 2000,
+        "director": "Sergio Leone"
+    
+    },
+    { 
+        _id: 3, 
+        "name": "Terminator-2",
+        "release_year": "1992",
+        "rating": 7.8,
+        "starring": ["Arnold Schwarzenegger", "Linda Hamilton","Robert Patrick"],
+        "runtime": 115,
+        "totalReviews": 720,
+        "director": "James Cameron"
+    
+    },
+    { 
+        _id: 4, 
+        "name": "The Pursuit of Happiness",
+        "release_year": "2008",
+        "rating": 7.6,
+        "starring": ["Will Smith","Jade Smith"],
+        "runtime": 150,
+        "totalReviews": 95,
+        "director": "Gabriel M"
+        
+        
+        },
+    {
+         _id: 5, 
+         "name": "The Pursuit of Happiness",
+        "release_year": "2008",
+        "rating": 7.6,
+        "starring": ["Will Smith","Jade Smith"],
+        "runtime": 100,
+        "totalReviews": 150,
+        "director": "Gabriel M"
+        
+        }
+  ,
+  {
+    _id: 6, 
+    "name": "The Pursuit of Happiness",
+    "release_year": "2008",
+    "rating": 7.6,
+    "starring": ["Will Smith","Jade Smith"],
+    "runtime": 150,
+    "totalReviews": 200,
+    "director": "Gabriel M"
+   
+   }
+,
+{
+    _id: 7, 
+    "name": "Rocky",
+    "release_year": "1976",
+    "rating": 8.2,
+    "starring": ["Sylvester Stallone","Carl Weathers", "Burt Young"],
+    "runtime": 100,
+    "totalReviews": 1976,
+    "director": "John Adams"
+   
+   }
+   ,
+   {
+    _id: 8,
+    "name": "The Godfather",
+    "release_year": "1972",
+    "rating": 9.2,
+    "starring": ["Al Pacino","Marlon Brando","Robert D"],
+    "runtime": 120,
+    "totalReviews": 1800,
+    "director": "Francis Ford Coppola"
+
+   }/* global use, db */
+// MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+// The result of the last command run in a playground is shown on the results panel.
+// By default the first 20 documents will be returned with a cursor.
+// Use 'console.log()' to print to the debug output.
+// For more documentation on playgrounds please refer to
+// https://www.mongodb.com/docs/mongodb-vscode/playgrounds/
+
+// Select the database to use.
+use('mongodbVSCodePlaygroundDB');
+
+// Insert a few documents into the sales collection.
+db.getCollection('sales').insertMany([
+  { 'item': 'abc', 'price': 10, 'quantity': 2, 'date': new Date('2014-03-01T08:00:00Z') },
+  { 'item': 'jkl', 'price': 20, 'quantity': 1, 'date': new Date('2014-03-01T09:00:00Z') },
+  { 'item': 'xyz', 'price': 5, 'quantity': 10, 'date': new Date('2014-03-15T09:00:00Z') },
+  { 'item': 'xyz', 'price': 5, 'quantity': 20, 'date': new Date('2014-04-04T11:21:39.736Z') },
+  { 'item': 'abc', 'price': 10, 'quantity': 10, 'date': new Date('2014-04-04T21:23:13.331Z') },
+  { 'item': 'def', 'price': 7.5, 'quantity': 5, 'date': new Date('2015-06-04T05:08:13Z') },
+  { 'item': 'def', 'price': 7.5, 'quantity': 10, 'date': new Date('2015-09-10T08:43:00Z') },
+  { 'item': 'abc', 'price': 10, 'quantity': 5, 'date': new Date('2016-02-06T20:20:13Z') },
+]);
+
+// Run a find command to view items sold on April 4th, 2014.
+const salesOnApril4th = db.getCollection('sales').find({
+  date: { $gte: new Date('2014-04-04'), $lt: new Date('2014-04-05') }
+}).count();
+
+// Print a message to the output window.
+console.log(`${salesOnApril4th} sales occurred in 2014.`);
+
+// Here we run an aggregation and open a cursor to the results.
+// Use '.toArray()' to exhaust the cursor to return the whole result set.
+// You can use '.hasNext()/.next()' to iterate through the cursor page by page.
+db.getCollection('sales').aggregate([
+  // Find all of the sales that occurred in 2014.
+  { $match: { date: { $gte: new Date('2014-01-01'), $lt: new Date('2015-01-01') } } },
+  // Group the total sales for each product.
+  { $group: { _id: '$item', totalSaleAmount: { $sum: { $multiply: [ '$price', '$quantity' ] } } } }
+]);
+
+    ])
+
+    db.movies.aggregate(
+    {
+        $group: {_id: "$release_year"
+        }
+      }
+    )
+
+
+    db.movies.aggregate(
+
+        {
+            $group:{_id:{"release_year":"$release_year","name":"$name","starring":"$starring"}}
+        }
+    )
+
+    db.movies.aggregate(
+    {
+        $group:{_id:"$rating","TotalMovies":{$count:{} }}
+    }
+    )
+
+
+    db.movies.aggregate(
+    {
+    $group:{_id:"$rating",TotalMovies:{$sum:"$totalReviews"}}
+
+    }
+    )
+
+
+    db.movies.aggregate(
+        {
+        $group:{_id:"$rating",TotalMovies:{$max:"$totalReviews"}}
+    
+        }
+        )
+
+
+db.movies.aggregate(
+{
+    $group:{_id:"$rating",TotalMovies:{$min:"$totalReviews"}}
+        
+}
+)
+
+
+db.movies.aggregate(
+    {
+        $group:{_id:"$rating",TotalMovies:{$avg:"$totalReviews"}}
+            
+    }
+)
+
+
+//push accumulator
+//We want to look at all the ratings movies received for every release year. 
+//Let's use the $push accumulator to get all the movie names for each year:
+
+db.movies.aggregate(
+{
+    $group: { _id: {year: "$release_year",},ratings: {$push: "$rating"} }
+}
+)
+
+//$first accumulator
+//This accumulator is different from the $first array operator which gives first element in an array. For each grouped documents, $first 
+//accumulator gives us the first one.
+
+//Let's fetch the highest rated movie for every release year. Since we want to get the highest rated document from the each group, we need to sort the documents before passing them to the group stage.
+
+
+db.movies.aggregate(
+{
+    "$sort": { "release_year": 1, "rating": -1}
+  },
+  {
+ $group: { _id: "$release_year",highestRating: {$first: "$rating" }}
+  }
+)
+
+//Sorting the results
+//The year with the highest movie minutes might give us some insights on movies 
+//production and its correlation with 
+db.movies.aggregate(
+{
+    $group: {
+      _id: {
+        rating: "$rating"
+      },
+      releasedIn: {
+        "$addToSet": "$release_year"
+      }
+    }
+  }
+)
+db.movies.aggregate(
+  {
+    $group: {
+      _id: {
+        year: "$release_year"
+      },
+      minRating: { $min: "$rating" }
+    }
+  },
+  {
+    "$match": {
+      minRating: { $gt: 7 }
+    }
+  }
+)
+
+db.movies.aggregate(
+  {
+    "$sort": {
+      "release_year": 1,
+      "rating": -1
+    }
+  },
+  {
+    $group: {
+      _id: "$release_year",
+      highestRating: {
+        $first: "$rating"
+      }
+    }
+  }
+)
+
+db.movies.aggregate(
+  {
+    "$project": {
+      rating: {
+        "$round": "$rating"
+      }
+    }
+  },
+  {
+    $group: {
+      _id: "$rating",
+      movies: {
+        $sum: 1
+      }
+    }
+  }
+)
+db.movies.aggregate(
+  {
+    $group: {
+      _id: "$release_year",
+      totalRuntime: {
+        "$sum": "$runtime"
+      }
+    }
+  },
+  {
+    "$sort": {
+      "totalRuntime": -1
+    }
+  }
+)
+

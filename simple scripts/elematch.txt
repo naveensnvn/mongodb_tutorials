@@ -1,0 +1,218 @@
+
+db.Scores.drop()
+
+db.Scores.insertMany([  
+{ _id: 1,'usn':'4AD24CD011', results_marks:[ 82, 85, 89 ] },
+{ _id: 2,'usn':'4AD24CD041', results_marks:[ 75, 87, 99 ] },
+{ _id: 3,'usn':'4AD24CD070', results_marks:[ 95, 88, 78 ] },
+{ _id: 4,'usn':'4AD24CD088', results_marks:[ 82, 75, 96 ] }
+])
+
+
+//demonstrate working of elemMatch
+db.Scores.find({results_marks:{$elemMatch:{$eq:85}}})
+
+db.Scores.find({results_marks:{$elemMatch:{$in:[82,96]}}})
+
+
+db.Scores.find({results_marks:{$elemMatch:{$gt:80,$lte:82}}})
+
+
+https://polyglot-phil.com/nosql/docstore/mongodb/2018/08/25/mongodb-advanced-queries-aggregates.html
+
+
+//example3 of $elematch
+db.Schools.insertMany([  
+{
+    _id: 1,
+    zipcode: "63109",
+    student_details: [
+                 { name: "Nikitha", school_name:'Naukis School', age: 10 },
+                 { name: "Dechamma ", school_name:'Marimallapa', age: 11 },
+                 { name: "Monika", school_name:'Sadvidya', age: 15 }
+              ]
+   }
+   ,
+   {
+    _id: 2,
+    zipcode: "63110",
+    student_details: [
+                 { name: "Akash",school_name:'Delhi Public School', age: 10 },
+                 { name: "Rajesh", school_name:'Central Public School', age: 15 },
+              ]
+   }
+   ,
+   {
+    _id: 3,
+    zipcode: "63109",
+    student_details: [
+                 { name: "Maheshwari",school_name:"St.Mary's School", age: 13 },
+                 { name: "Harsha",school_name:'St.Joseph School', age: 14 },
+              ]
+   }
+])
+   
+/* This query is searching for documents in the "Schools" collection where the "zipcode" field is equal
+to "63109" and then returning only the first matching element within the "student_details" array
+that has a "school_name" equal to "St.Joseph School". */
+
+// query to find whose school zipcode is 63109 and then returning only the first matching element within the "student_details" array
+//that has a "school_name" equal to "Sadvidya"
+
+db.Schools.find({ zipcode: "63109" },{student_details: { $elemMatch: { school_name: "Sadvidya"} } } )
+
+// query to find whose school zipcode is 63109 and then returning only the first matching element within the "student_details" array
+//that has a "school_name" equal to "St.Joseph School"
+
+db.Schools.find({ zipcode: "63109" },{student_details: { $elemMatch: { school_name: "St.Joseph School"} } } )
+
+
+
+// query to find whose school zipcode is 63110 and then returning only the first matching element within the "student_details" array
+//that has a "school_name" equal to "Central Public School" and age should be greater than 10
+db.Schools.find( { zipcode: "63110" }, { student_details: { $elemMatch: { school_name: 'Central Public School',
+age: { $gt: 10} } } } )
+
+
+
+//example4 of $elematch
+db.survey.drop()
+
+db.survey.insertMany([ 
+{ _id: 1, results: [ { product: "pepsi", score: 10 }, { product: "coco cola", score: 5 } ] },
+{ _id: 2, results: [ { product: "pepsi", score: 8 }, { product: "coco cola", score: 7 } ] },
+{ _id: 3, results: [ { product: "pepsi", score: 7 }, { product: "coco cola", score: 8 } ] }
+])
+
+
+//demonstrate working of $elematch
+db.survey.find({ results: { $elemMatch: { product: "pepsi", score: { $gte: 8 } } } } )
+
+db.survey.find( { results: { $elemMatch: { product: "coco cola" } } } )
+
+db.survey.find({ "results": { $elemMatch: { product: { $ne: "pepsi" } } } })
+ 
+
+
+
+//example5 of $elematch
+db.collegeinfo.drop()
+
+db.collegeinfo.insert([{
+    "_id" : 1,
+    "name" : "ATME",
+    "students" : [  
+        { "rollNo" : '4AD23CD056', "name" : "Ram", "score" : [65,80], "section" : "A" },
+        { "rollNo" : '4AD23CD046',"name" : "Shyam", "score" : [90,97],"section" : "B" },
+        { "rollNo" : '4AD23CD026', "name" : "Mohan", "score" : [75,89], "section" : "C" }       
+        ]
+},
+{
+    "_id" : 2,
+    "name" : "MIT",
+    "students" : [  
+        { "rollNo" : '4MI23CD026', "name" : "Krishna", "score" : [88,90], "section" : "B" },
+        { "rollNo" : '4MI23CD046', "name" : "Sohan", "score" : [91,68],"section" : "A" },
+        { "rollNo" : '4MI23CD051', "name" : "Radhika", "score" :[ 82,78], "section" : "A" },
+        { "rollNo" : '4MI23CD089', "name" : "Komal", "score" : [55,56], "section" : "C" }        
+        ]
+},
+{
+    "_id" : 3,
+    "name" : "VVIET",
+    "students" : [  
+        { "rollNo" : '4VV23CD056', "name" : "Monika", "score" : [77,90], "section" : "B" },      
+        { "rollNo" : '4VV23CD056', "name" : "Rahul", "score" : [81,91],"section" : "A" }       
+        ]
+}])
+
+
+//find details of student name  whoose  score is greater than 85 usine elemMatch
+db.collegeinfo.find ({'students': { $elemMatch:{ 'score' :{$gt : 85}}}},
+    {_id:0, name:1,"students.rollNo":1,"students.name":1 ,"students.section":1,"students.score":1})
+
+
+
+
+//find details of student name  who belongs to atme and scored above 85
+db.collegeinfo.find ({"name":"ATME"},{'students': { $elemMatch:{ 'score' :{$gt : 85}}}},
+    {_id:0, name:1,"students.rollNo":1,"students.name":1 ,"students.section":1,"students.score":1})
+
+
+
+//example6 of $elematch
+db.products.drop()
+db.products.insertMany([
+{ "_id" : 1, "name" : "IPhone", "price" : 799, "releaseDate" : ISODate("2011-05-14T00:00:00Z"), "spec" : { "ram" : 4, "screen" : 6.5, "cpu" : 2.66 }, "color" : [ "white", "black" ], "storage" : [ 64, 128, 256 ] },
+{ "_id" : 2, "name" : "Samsung", "price" : 899, "releaseDate" : ISODate("2011-09-01T00:00:00Z"), "spec" : { "ram" : 16, "screen" : 9.5, "cpu" : 3.66 }, "color" : [ "white", "black", "purple" ], "storage" : [ 128, 256, 512 ] },
+{ "_id" : 3, "name" : "Redmi Note PRO", "price" : 899, "releaseDate" : ISODate("2015-01-14T00:00:00Z"), "spec" : { "ram" : 12, "screen" : 9.7, "cpu" : 3.66 }, "color" : [ "blue" ], "storage" : [ 16, 64, 128 ] },
+{ "_id" : 4, "name" : "Oppo", "price" : 699, "releaseDate" : ISODate("2020-05-14T00:00:00Z"), "spec" : { "ram" : 8, "screen" : 9.7, "cpu" : 1.66 }, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256, 1024 ] },
+{ "_id" : 5, "name" : "Vivo", "price" : 599, "releaseDate" : ISODate("2022-09-14T00:00:00Z"), "spec" : { "ram" : 4, "screen" : 9.7, "cpu" : 1.66 }, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256 ] }
+        ])
+
+//fetch details whoose storage capacity les than 128  using   elemMatch opearator      
+db.products.find({storage: {$elemMatch: {$lt: 128}}}, {name: 1,storage: 1});
+
+//fetch details whoose color is purple using   elemMatch opearator
+db.products.find({color: {$elemMatch: {$eq: 'purple'}}}, {name: 1,storage: 1});
+//example 7 of $elematch
+//Create Collection
+db.student.drop()
+
+db.student.insertMany([
+{
+   "_id" : 1,
+   "details" : [
+      {"name": "Jagdish", "age" : 23}
+   ],
+  "marks": [80, 89, 90]
+},
+{
+   "_id" : 2,
+   "details" : [
+      { "name": "Emily", "age" : 21 }
+   ],
+  "marks": [90, 85, 70]
+},
+{ "_id" : 3, 
+  "details" : [
+      { "name": "Rajesh", "age" : 25 }
+   ],
+ "marks": [86, 79, 70]
+} ,
+{
+   "_id" : 4,
+   "details" : [
+      { "name": "Deepika", "age" : 22}
+   ],
+ "marks": [88, 81, 78] 
+}
+])
+
+//$elemMatch operator with condition marks greater than or equal to 80
+db.student.find({ "marks": {$elemMatch: {$lt: 80}}});
+
+//$elemMatch operator with find method marks between 80 and 85
+db.student.find({ "marks": { $elemMatch: { $gte: 80, $lt: 85 } } } )
+
+// Using the $elemMatch operator for embedded fields whoose  name is 'Alex and age greater than equal to 22
+ db.student.find({ details: { $elemMatch: { name: "Deepika", "age": { $gte: 22 } } } })
+// Using the multiple $elemMatch operator in MongoDB
+
+// Usage of  $elemMatch operator with multiple conditions using or
+db.student.find({
+    $or: [
+         {details: {$elemMatch: {"name": "Rajesh", "age": 25} } },
+         {details: {$elemMatch: {"name": "Deepika", "age": 22} } }
+    ]
+});
+
+
+
+
+
+
+
+
+
+

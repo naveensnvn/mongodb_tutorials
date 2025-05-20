@@ -1,0 +1,387 @@
+
+db.nations.drop()
+
+db.nations.insertMany([
+    {_id:1,"City_Name": "Mumbai", "country": "India", "continent": "Asia", "population": 19.980 },  
+    {_id:2,"City_Name": "Delhi", "country": "India", "continent": "Asia", "population": 28.514 },
+    {_id:3,"City_Name": "Bangalore", "country": "India", "continent": "Asia", "population": 36.751 },
+    {_id:4,"City_Name": "Chennai", "country": "India", "continent": "Asia", "population": 56.751 },
+    {_id:5,"City_Name": "Kathmandu", "country": "Nepal", "continent": "Asia", "population": 10.281 },
+   {_id:6,"City_Name": "Seoul", "country": "South Korea", "continent": "Asia", "population": 25.674 },
+    {_id:7,"City_Name": "Kyoto", "country": "Japan", "continent": "Asia", "population": 13.281 },
+	{_id:8,"City_Name": "Tokyo", "country": "Japan", "continent": "Asia", "population": 37.400 },
+    {_id:9,"City_Name": "Beijing", "country": "China", "continent": "Asia", "population": 19.618 },
+    {_id:10,"City_Name": "Shanghai", "country": "China", "continent": "Asia", "population": 25.582 },
+     {_id:11,"City_Name": "Perth", "country": "Australia", "continent": "Australia", "population": 6.751 },
+    {_id:12,"City_Name": "Melbourne", "country": "Australia", "continent": "Australia", "population": 11.751 },
+    {_id:13,"City_Name": "Sydney", "country": "Australia", "continent": "Australia", "population": 10.751 },
+	  {_id:14,"City_Name": "Boston", "country": "USA", "continent": "North America", "population": 26.751 },
+	  {_id:15,"City_Name": "New York", "country": "USA", "continent": "North America", "population": 18.819 },
+	   {_id:16,"City_Name": "Los Angeles", "country": "USA", "continent": "North America", "population": 21.751 },
+	  {_id:17,"City_Name": "Toronto", "country": "Canada", "continent": "North America", "population": 17.819 },
+	   {_id:18,"City_Name": "Ottawa", "country": "Canada", "continent": "North America", "population": 11.751 },
+	    {_id:19,"City_Name": "Mexico City", "country": "Mexico", "continent": "North America", "population": 21.581 },
+	  {_id:20,"City_Name": "Rio de Janeiro", "country": "Brazil", "continent": "South America", "population": 13.293 },
+    {_id:21,"City_Name": "São Paulo", "country": "Brazil", "continent": "South America", "population": 21.650 }, 
+        {_id:22,"City_Name": "Paris", "country": "France", "continent": "Europe", "population": 12.751},
+		  {_id:23,"City_Name": "Lyon", "country": "France", "continent": "Europe", "population": 5.751 },
+  {_id:24,"City_Name": "Berlin", "country": "Germany", "continent": "Europe", "population": 15.751 },
+    {_id:25,"City_Name": "Munich", "country": "Germany", "continent": "Europe", "population": 5.751 },
+   {_id:26,"City_Name": "Turin", "country": "Italy", "continent": "Europe", "population": 4.751 },
+  {_id:27,"City_Name": "Rome", "country": "Italy", "continent": "Europe", "population": 6.751 }
+])
+
+db.nations.find()
+
+// query to find no of recors in document
+
+db.nations.aggregate( [
+    {
+       $group: {_id: null,count_Number_Of_Records: {$count: {}}}
+    }
+ ] )
+
+ // query to find no of cities  where continent='Asia'
+ db.nations.aggregate([
+    
+    {$match: { continent: "Asia" }},
+    {$group: {_id: null,count: { $sum: 1 } }
+    }
+  ])
+
+ // query to find no of cities in India where continent='Asia'
+   db.nations.aggregate([
+    
+    {$match: { continent: "Asia",country: "India"  }},
+    {$group: {_id:null,No_of_countries_in_India: { $sum: 1 } }
+    }
+  ])
+
+
+
+
+ // query to find no of CITY   where continent='Asia' 
+ db.nations.aggregate([
+    
+    {$match: { continent: "Asia" }},
+    {$group: {_id:'',no_of_countries_in: { $sum: 1 } }
+    }
+  ])
+
+ // query to find no of cities in India where continent='Asia'
+   db.nations.aggregate([
+    
+    {$match: { continent: "Asia",country: "India"  }},
+    {$group: {_id:null,No_of_countries_in_India: { $sum: 1 } }
+    }
+  ])
+
+ // query to find no of cities incontinent='North America'
+   db.nations.aggregate([
+    
+    {$match: { continent: "North America" }},
+    {$group: {_id:null,No_of_countries_in_India: { $sum: 1 } }
+    }
+  ])
+
+
+// query to fetch and display no of cities in each country
+// where "continent"="Europe" using a  aggregate with match
+db.nations.aggregate([
+    { $match: { "continent": "Asia" } },
+    { $group: { _id: "$country", no_of_cities_in_respective_countires: { $sum: 1 } } }
+    
+  ])
+
+
+
+  db.nations.aggregate([
+    { $match: { "continent": "Europe", } },
+    { $group: { _id: null, count: { $sum: 1 } } }
+    
+  ])
+
+
+//making use of in aggregate
+// query to fetch and display list of  country  details which are present in 
+// 2 continents --Europe,Asia using a Europe aggregate with match and in operatpr
+db.nations.aggregate([
+    {$match: {"continent":{$in:['Europe','Asia'] }}}
+])
+
+// query to fetch and display list of  country  details which are present in 
+// 2 country --USA,India using a Europe aggregate with match and in operatpr
+db.nations.aggregate([
+    { $match: { "country": { $in: ["USA", "India"] } } }
+])
+
+
+// query to display document details  by sorting  population asc order using aggregate
+db.nations.aggregate([
+    {$sort:{"population":1}}
+])
+
+
+/// query to display document details  by sorting  population desc order using aggregate
+db.nations.aggregate([
+    {$sort:{"population":-1}}
+])
+
+//display list of country details present in North America  continent and sort population in asc order using aggregate with match
+db.nations.aggregate([
+    { $match: { "continent": "North America" } },
+    { $sort: { "population": 1 } }
+])
+
+//display list of country details present in Asia continent and sort population in asc order using aggregate with match
+db.nations.aggregate([
+    {$match: {'continent':'Asia'}},
+    {$sort:{'population':-1}}
+])
+
+//display list of cities  details present inNorth America continent and country: USA a and sort population in desc order using aggregate with match
+db.nations.aggregate([
+    {$match: {'continent':'North America'}},
+    {$match: {'country':'USA'}},
+    {$sort:{'population':-1}}
+])
+
+//display list of cities  details present in Asia  continent and country: India a and sort population in desc order using aggregate with match
+
+db.nations.aggregate([
+    {$match: {'continent':'Asia'}},
+    {$match: {'country':'India'}},
+    {$sort:{'population':-1}}
+])
+
+
+
+//simple query to group by continent,country using aggregate with group
+db.nations.aggregate([
+    {$group:{_id:{'continent':'$continent','country':'$country'}}}
+])
+
+//simple query to group by continent,country,City_Name using aggregate with group
+db.nations.aggregate([
+    {$group:{_id:{'continent':'$continent','country':'$country','City_Name':'$City_Name'}}}
+])
+
+//QUERY TO FIND HIGHEST POPULATION IN COUNTRY BY  USING aggregate WITH group
+db.nations.aggregate([
+    { $group: {"_id": { "continent": "$continent","country": "$country"},
+            "highest_population": { $max: "$population" },
+           
+        }
+    }
+])
+
+
+//QUERY TO FIND HIGHEST POPULATION IN COUNTRY BY  USING aggregate WITH group
+db.nations.aggregate([
+    { $group: {"_id": { "continent": "$continent","country": "$country"},
+            "highest_population": { $max: "$population" },
+           
+        }
+    }
+])
+
+// QUERY TO DISPLAY COUNTRY NAME ALONG WITH HIGHEST POPULATION IN THAT COUNTRY USING   aggregate WITH group
+db.nations.aggregate([
+ 
+   { 
+      $group: {"_id": { "country": "$country"},
+           "highest_population": { $max: "$population" },
+          
+ },
+   },
+])
+//QUERY TO FIND HIGHEST POPULATION IN COUNTRY BY  USING aggregate WITH group by,continent, country
+
+db.nations.aggregate([
+    {$match: {'continent':'Asia'}},
+    {$match: {'country':'India'}},
+    {$group: {"_id": { "continent": "$continent","country": "$country"},"highest_population": { $max: "$population" }}},
+    {$sort:{'population':-1}}
+])
+
+
+//QUERY TO FIND  POPULATION of each citiies  IN COUNTRY= India BY  USING aggregate WITH group by City_Name using 
+//aggregate ,match,group ,max and finally sort population in desc order
+db.nations.aggregate([
+    {$match: {'continent':'Asia'}},
+    {$match: {'country':'India'}},
+    {$group: {"_id":"$City_Name","highest_population": {  $max:"$population" }}},
+    {$sort:{'population':-1}}
+])
+
+
+//query to highest population in respective country using aggregate,group and max
+db.nations.aggregate([
+ 
+   { 
+      $group: {"_id": { "country": "$country",'City_Name':'$City_Name'},
+           "highest_population": { $max: "$population" },
+          
+ },
+   },
+])
+
+// query to fetch  lowest  population in each country using aggregate,group and min
+db.nations.aggregate([
+    {$group:{"_id":{'continent':'$continent','country':'$country','City_Name':'$City_Name'},
+    "lowest population in country":{$min:"$population"}}}
+])
+
+// query to fetch  avg  population in each country using aggregate,group and avg
+db.nations.aggregate([
+    {$group:{"_id":{'continent':'$continent','country':'$country'},
+    "average population in country":{$avg:"$population"}}}
+])
+
+// query to fetch  total(add popoulation in cities)  population in each country using aggregate,group and  sum and
+//finall sort  Totalpopulation in desc orders
+db.nations.aggregate([
+    {$group:{"_id":{'continent':'$continent','country':'$country'},
+    Totalpopulation:{$sum:"$population"}}},
+    {$sort:{Totalpopulation:-1}}
+])
+
+//QUERY TO FIND highest population of respective countryy,followed by 
+// fetching
+// higesth population in country
+//first city of country,
+// display count-how many cities belong to respective country
+// using aggregate,group,max,first,sum
+db.nations.aggregate([
+    {
+        $group: {
+            "_id": {
+                "continent": "$continent",
+                "country": "$country"
+            },
+            "highest_population": { $max: "$population" },
+            "first_city": { $first: "$City_Name" },
+            "total number of citiies in eacH country": { $sum: 1 }
+        }
+    }
+])
+
+
+//QUERY TO FIND highest population of respective countryy,followed by fetching
+//last city of country,using aggregate,group,max,first,sum
+db.nations.aggregate([
+    {
+        $group: {"_id": { "continent": "$continent", "country": "$country"},
+            "lowestt_population is": { $min: "$population" },
+            "last_city": { $last: "$City_Name" }
+            
+        }
+    }
+])
+// query how to use project in aggregate,use project to display only certain fields --country,continent,City_Name,population
+db.nations.aggregate([
+{
+$project: {"_id": 0,"location": {"country": "$country","continent": "$continent",},"City_Name": "$City_Name","population": "$population" }}
+])
+
+
+//query  display details of country which belong to North America and Asia
+// using aggregate ,match and in finally sort population in desc order
+db.nations.aggregate([
+    {$match: {"continent": { $in: ["Europe", "Asia"] }}
+    },
+    {$sort: { "population": -1 }}
+])
+
+//SUPER
+//Query to DISPLAY HIGHEST POPULATION OF RESPECTIVE COUNTRY BELONGING TO 
+//ONLY North America and Asia finall sort by population in desc 
+//using  aggregate ,group,max
+db.nations.aggregate([
+{$match: {"continent": { $in: ["North America", "Asia"] } }},
+{$sort: { "population": -1 }},
+    {$group: {"_id": {"continent": "$continent","country": "$country" },
+    "first_city": { $first: "$City_Name" },
+    "highest_population": { $max: "$population" }
+        }
+    }
+])
+
+// get highest population of respective country belonging to continent:North America
+// using aggregate,match,max,group.finall sort population in desc orders
+db.nations.aggregate([
+    { $match: { "continent": "North America" }},
+    {$sort: { "population": -1 } },
+    {$group: {"_id": {"country": "$country"},
+    "highest_population": { $max: "$population" }
+        }
+    }
+   // {$match: { "highest_population": { $gt: 20.0 } }}
+])
+// get lowest population of  country belonging to continent:North America
+// using aggregate,match,max,group.finall sort population in desc orders
+db.nations.aggregate([
+    { $match: { "continent": "North America" }},
+    {$group: {"_id": {"country": "$country"},
+    "lowest_population": { $min: "$population" }}},
+     {$sort: { "population": -1 } },
+  
+ //  {$match: { "lowest_population": { $gt: 20.0 } }}
+   // {$match: { "highest_population": { $gt: 20.0 } }}
+])
+// get lowest population of  country belonging to continent:North America
+// using aggregate,match,max,group.finally sort population in desc orders
+// and population>=20.0
+db.nations.aggregate([
+    { $match: { "continent": "North America" }},
+    {$group: {"_id": {"country": "$country"},
+    "lowest_population": { $min: "$population" }}},
+     {$sort: { "population": -1 } },
+  
+ {$match: { "lowest_population": { $gte: 20.0 } }}
+   // {$match: { "highest_population": { $gt: 20.0 } }}
+])
+
+
+
+
+
+
+// get lowest population of each country using aggregate,group sort 
+db.nations.aggregate([
+
+  {$sort: { "population": -1 } },
+    {$group: {"_id": {"country": "$country"},
+    "highest_population": { $min: "$population" }
+        }
+    },
+      
+])
+
+
+
+//query  get highest population of respective country belonging to continent:North America and Asia
+// using aggregate,match,max,group.finaly sort population in desc orders and population>20.0
+db.nations.aggregate([
+    {$match: {"continent": { $in: ["North America", "Asia"] }}},
+    {$sort: { "population": -1 }},
+    {$group: {"_id": {"continent": "$continent","country": "$country"},
+       "highest_population": { $max: "$population" }
+        }
+    },
+    {$match: {"highest_population": { $gt: 20.0 }}
+    },
+    {$sort: { "highest_population": -1 }}
+])
+
+//query  get highest population of respective country belonging to continent: Asia
+// using aggregate,match,max,group.finaly sort population in asc orders and population>20.0
+db.nations.aggregate([
+    {$match: { "continent":  "Asia"}},
+    {$group: {"_id": {"continent": "$continent", "country": "$country",'City_Name':'$City_Name'},"first_city": { $first: "$name" }, "highest_population": { $max: "$population" }}},
+    {$match: {"highest_population": { $gt: 20.0 }}},
+    {$sort: { "highest_population": 1 }},
+    {$project: {"_id": 0,"location": {"country": "$_id.country","continent": "$_id.continent",'City_Name':'$City_Name'}, "most_populated_city": {"City_Name": "$City_Name",
+    "population": "$highest_population"}}}
+])
+

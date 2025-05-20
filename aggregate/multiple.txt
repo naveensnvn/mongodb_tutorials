@@ -1,0 +1,111 @@
+db.products1.insertMany([ 
+    {
+    "_id" : 1,
+    "name" : "BlueBox",
+    "x" : 10,
+    "y" : 50,
+    "billYear" : 2018
+    }
+    ,
+    {
+    "_id" : 2,
+    "name" : "GreenBox",
+    "x" : 10,
+    "y" : 6,
+    "billYear" : 2017
+    }
+    ,
+    {
+    "_id" : 3,
+    "name" : "RedBox",
+    "x" : 7,
+    "y" : 9,
+    "billYear" : 2018
+    }
+    ,
+    {
+    "_id" : 4,
+    "name" : "WhiteBox",
+    "x" : 2,
+    "y" : 7,
+    "z" : 4,
+    "billYear" : 2019
+    }
+    ,
+    {
+    "_id" : 5,
+    "name" : "BlueBox",
+    "x" : 4,
+    "y" : 12,
+    "billYear" : 2020
+    }
+    ,
+    {
+    "_id" : 6,
+    "name" : "BlueBox",
+    "x" : 10,
+    "y" : 5,
+    "billYear" : 2021
+    }
+    ,
+    {
+    "_id" : 7,
+    "name" : "WhiteBox",
+    "x" : 5,
+    "y" : 1,
+    "z" : 45,
+    "billYear" : 2019
+    }
+    ,
+    {
+    "_id" : 8,
+    "name" : "GreenBox",
+    "x" : -15,
+    "y" : 5,
+    "billYear" : 2018
+    }
+    ,
+    {
+    "_id" : 9,
+    "name" : "BlackBox",
+    "billDetail" : 
+    {
+    "x" : 45,
+    "y" : 56,
+    },
+    "billYear" : 2021
+    }
+    ,
+    {
+    "_id" : 10,
+    "name" : "WhiteBox",
+    "x" : 4,
+    "y" : 5,
+    "z" : 6,
+    "billYear" : 2020
+    }
+    ])
+
+db.products1.aggregate(  
+    [  
+      {$match: { name : "BlueBox"}},  
+         {   $project:   {   name : 1,   x : 1,  y : 1,  answer : {$multiply: ["$x", "$y"]}  }  
+         }  
+    ]  
+   )  
+
+   db.products1.aggregate(  
+    [  
+      {$match: { name : "BlackBox"}},  
+    {  $project:  {   name : 1,   x : 1,  y : 1,   answer : {$multiply: ["$billDetail.x", "$billDetail.y"]}   }  }  
+    ]  
+   )  
+
+   db.products1.aggregate(  
+    [  
+      {$match: { name : "RedBox"}},  
+{   $project:   {  name : 1,  x : 1,  answer : { $multiply : [ "$x", 10 ]}  }  
+         }  
+    ]  
+   )  
+

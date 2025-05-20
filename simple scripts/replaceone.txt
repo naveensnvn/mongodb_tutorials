@@ -1,0 +1,136 @@
+//db.collection.()
+//Replaces a single document within the collection based on the filter.
+// //example 1
+ //Replacing Values using replaceOne()
+    db.Designation.drop()
+    db./* The `Designation` collection is storing information about employees, including their name, age,
+    and position within the company. It seems to be used to track the designation or job title of
+    each employee. In the provided code snippet, the collection is initially populated with data for
+    employees, and then a `replaceOne()` operation is attempted on a collection named `employees`,
+    which does not exist in the provided code. This operation is intended to update the details of an
+    employee named "John Doe" to change his position to "Senior Software Engineer" and increase his
+    age to 31. However, since the collection being referenced is incorrect, the operation will not
+    have any effect on the data. */
+    /* The `Designation` collection in the MongoDB database is storing information about employees,
+    including their name, age, and position within the company. The collection contains documents for
+    different employees, each with a unique `_id` field. The `replaceOne()` operation is used to
+    update the information of a specific employee based on a filter condition. In the provided code
+    snippet, the operation is attempting to replace the document for the employee named "John Doe"
+    with updated information, such as an increase in age and a change in job position to "Senior
+    Software Engineer". */
+    db.Designation.drop()
+
+db.Designation.insertMany([ 
+     {
+       "_id": 1,
+       "name": "Shreyas",
+       "age": 30,
+       "position": "Software Engineer"
+     },
+     {
+       "_id": 2,
+       "name": "Kavya",
+       "age": 25,
+       "position": "Marketing Manager"
+     },
+     {
+       "_id": 3,
+       "name": "Mohammed Umar"
+       ",
+       "age": 28,
+       "position": "Designer"
+     }
+     ,
+     {
+         "_id": 4,
+         "name": "Sunil Gaskavar",
+         "age": 28,
+         "position": "commentator"
+       }
+ ])
+ 
+ db.Designation.replaceOne(
+     { "name": "Shreyas" },
+     {
+       "_id": 1,
+       "name": "sumanth",
+       "age": 31,
+       "position": "Senior Software Engineer"
+     }
+    
+    db.Designation.replaceOne(
+        { "name": "John Doe" },
+        {
+          "_id": 1,
+          "name": "Richard Gere",
+          "age": 31,
+          "position": "Senior Software Engineer"
+        }
+     )
+    
+     db.Designation.find()
+    
+     //Example 2: Replace with Additional Fields
+     db.Designation.replaceOne
+     (
+        { "name": "Geoffrey boycot" },
+       
+        {
+          "_id": 4,
+          "name": "Travis Head",
+          "age": 28,
+          "position": "Vice Captain",
+          "department": "Cricket"
+        }
+     )
+     db.Designation.find()
+     //Example 3: Upsert a Document
+    //Problem Statement: We want to replace a record for an employee named Michael Brown. 
+    // If Michael doesn’t exist, 
+    //we will insert a new document for him.
+    db.Designation.replaceOne(
+        { "name": "Sundar Pichai" },
+        {
+          "_id": 5,
+          "name": "Sundar Pichai",
+          "age": 35,
+          "position": "CEO,GOOGLE"
+        },
+        { upsert: true }
+     )
+    
+     db.Designation.find()
+    
+
+    db.hotels.insertMany([ 
+            { "_id" : 1, "name" : "MTR", "Place" : "Bangalore" },
+            { "_id" : 2, "name":"Vidyaarthi Bhavan" ,"Place": "Bangalore","area":'Basvangudi' },
+            { "_id" : 3, "name" : "Empire", "Place": "Bangalore" },
+            { "_id" : 4, "name" : "Empire", "Place": "Mysore" },
+            { "_id" : 5, "name" : "Taj West end", "Place": "Bangalore" },
+            { "_id" : 6, "name" : "Southern Star", "Place": "Bangalore" }
+    ])
+     
+db.hotels.replaceOne(
+         { "name" : "Empire",Place:"Mysore" },
+    { "name" : "Shanti Sagar", "location" : "Mysore",'state':'Kuvempunagar' }
+  );
+    
+  db.hotels.find()
+        
+         db.cafes.insertMany([
+         { _id: 1, category: "café", status: "A" },
+         { _id: 2, category: "cafe", status: "a" },
+         { _id: 3, category: "cafE", status: "a" }
+        ])
+    
+
+        db.cafes.replaceOne(
+            { category: "cafe", status: "a" },
+            { category: "cafÉ", status: "Replaced" },
+    
+         );
+         db.cafes.find()
+
+         
+ 

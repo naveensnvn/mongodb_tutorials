@@ -1,0 +1,131 @@
+//MongoDB $cmp Operator
+db.areas.insertMany([ 
+    {  
+     "_id" : 1,   
+     "name" : "rectangle",  
+     "length" : 11,  
+     "breath" : 10  
+    }  
+    ,
+    {  
+     "_id" : 2,   
+     "name" : "square",  
+     "length" : 10,  
+     "breath" : 10    
+    } 
+    ,
+    {  
+     "_id" : 3,   
+     "name" : "rectangle",  
+     "length" : 14,  
+     "breath" : 16    
+    }  
+    ,
+    {  
+     "_id" : 4,   
+     "name" : "square",  
+     "length" : 6,  
+     "breath" : 6  
+    }  
+    ,
+    {  
+     "_id" : 5,   
+     "name" : "rectangle",  
+     "length" : 11,  
+     "breath" : 16  
+    }  
+])
+
+//In this example, we're going to compare the length and width fields using the $cmp operator.In this example, we're going to compare the
+//  length and width fields using the $cmp operator.
+db.areas.aggregate (  
+    [  
+      { $project :   
+             {   
+                 _id : 1,  
+                 name : 1,  
+                 length : 1,  
+                 breadth : 1,  
+                 result: { $cmp : [ "$length", "$breadth" ] }  
+             }  
+      }  
+    ]  
+  )  
+
+  //Suppose we add the following documents to our collection:
+  db.areas.insertMany([ 
+    {  
+     "_id" : 6,   
+     "name" : "rectangle",  
+     "length" : null,  
+     "breath" : 10  
+    }  
+    ,
+    {  
+     "_id" : 7,   
+     "name" : "square",  
+     "length" : 10,  
+     "breath" : null      
+    }  
+    ,
+    {  
+     "_id" : 8,   
+     "name" : "rectangle",  
+     "length" : null,  
+     "breath" : null      
+    }  
+  ])
+
+  db.areas.aggregate (  
+    [  
+      { $match : {_id : { $nin : [ 1, 2, 3, 4, 5 ] } } },   
+         { $project :   
+             {   
+                 _id : 1,  
+                 name : 1,  
+                 length : 1,  
+                 breadth : 1,  
+                 result: { $cmp : [ "$length", "$breadth" ] }  
+             }  
+      }  
+    ]  
+  )  
+
+  db.areas.insertMany([ 
+
+  {  
+    "_id" : 9,   
+    "name" : "item_1",  
+    "a" : ISODate("2020-05-09T23:30:15.100Z"),  
+    "b" : 10  
+}  
+,
+{  
+    "_id" : 10,   
+    "name" : "item_2",  
+    "a" : 10,  
+    "b" : ISODate("2012-11-18T04:00:20.112Z")    
+}  
+,
+{  
+    "_id" : 11,   
+    "name" : "item_3",  
+    "a" : ISODate("2018-11-14T04:00:20.112Z"),  
+    "b" : ISODate("2015-10-07T04:00:20.112Z")    
+}  
+  ])
+  //Example 3: Comparing different types
+  db.areas.aggregate (  
+    [  
+      { $match : {_id : { $nin : [ 1, 2, 3, 4, 5, 6, 7, 8 ] } } },   
+         { $project :   
+             {   
+                 _id : 1,  
+                 name : 1,  
+                 a : 1,  
+                 b : 1,  
+                 result: { $cmp : [ "$a", "$b" ] }  
+             }  
+      }  
+    ]  
+  )  

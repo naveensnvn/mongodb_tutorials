@@ -1,0 +1,225 @@
+//rename a field 1
+// genaral syntax for renaming fields
+//Method 1: Rename One Field
+db.collection.updateMany({}, {$rename:{"oldField":"newField"}}, false, true)
+//Method 2: Rename Multiple Fields
+db.collection.updateMany({}, {$rename:{"old1":"new1", "old2":"new2"}}, false, true)
+
+//demonstrate how to rename field in document in mongodb 
+
+db.footballers.drop()
+
+db.footballers.insertMany( [
+    {
+      "_id": 1,
+      "alias": [ "The American Cincinnatus", "The American Fabius" ],
+      "mobile": "555-555-5555",
+      "nmae": { "first" : "Diego", "last" : "Maradona" }
+    },
+    {
+      "_id": 2,
+      "alias": [ "My dearest friend" ],
+      "mobile": "222-222-2222",
+      "nmae": { "first" : "Christano", "last" : "Ronaldo" }
+    },
+    {
+      "_id": 3,
+      "alias": [ "Amazing grace" ],
+      "mobile": "111-111-1111",
+      "nmae": { "first" : "Lionel", "last" : "Messi" }
+    }
+ ] )
+db.footballers.find()
+//demonstrate how to rename field in document in mongodb  using update statement
+ db.footballers.updateMany(
+    {"nmae":{$ne:null}},
+    {$rename:{'nmae':'name'}}
+ )
+ db.footballers.find()
+
+//demonstrate how to rename field in document in mongodb  using update statement-- only 1st record
+ db.footballers.updateOne( { _id: 1 }, { $rename: { "name.first": "name.fname" } } )
+ db.footballers.find()
+
+
+// rename name.first to name.fname and name.last to name.lname of footballer Christano and Ronaldo
+db.footballers.updateOne({'name.first':'Christano','name.last':'Ronaldo'},{$rename:{'name.first':'name.fname','name.last':'name.lname'}})
+
+ db.footballers.find({'name.fname':'Christano','name.lname':'Ronaldo'})
+
+//START FRO HERE
+//Method 2: Rename Multiple Fields sub fields
+db.footballers.updateMany({}, {$rename:{"name.first":"name.fname", "name.last":"name.lname"}}, false, true)
+//db.footballers.updateMany({$rename:{'name.first':'name.fname','name.last':'name.lname'}})
+db.footballers.find()
+
+
+//Following is the query to change collection name in MongoDB
+db.footballers.renameCollection("soceer_players");
+
+
+//Let’s update some of the fields in the embedded document:
+db.shoes.drop()
+
+db.shoes.insertMany([  
+{
+        _id : 1,
+        "name"  :"Mariana Grider Boots",
+        "price" : 23000,
+        "size" : 7,
+        "brand" : "Nike",
+        "onSale" : false,
+        "moreDetails" : {"qtyAvlbl" : 40}
+}
+,
+{
+        "_id" : 2,
+        "name" : "Purple Shimmery Heels",
+        "price" : 13380,
+        "size" : 6,
+        "brand" : "Reebook",
+        "onSale" : true,
+        "moreDetails" : {"qtyAvlbl" : 10}
+}
+,
+{
+        "_id" : 3,
+        "name" : "Zac Porter Straps",
+        "price" : 19760,
+        "size" : 8,
+        "brand" : "Woodlands",
+        "onSale" : true,
+        "moreDetails" : {"qtyAvlbl" : 10}
+},
+{
+        "_id" : 4,
+        "name" : "Valerina's Red Carpet Toes",
+        "price" : 26000,
+        "size" : 9,
+        "brand" : "puma",
+        "onSale" : false,
+        "moreDetails" : {"qtyAvlbl" : 10
+        }
+}
+ ,
+{
+        "_id" : 5,
+        "name" : "Neeta Parmar's Stylish Bees 'n' Honey Boots",
+        "price" : 10780,
+        "size" : 7,
+        "style" : "Wedge",
+        "brand" : "bata",
+        "moreDetails" : {"qtyAvlbl" : 10}
+}
+])
+db.shoes.find()
+// demonstrate rename field from size to sizeinIndia in document  shoes
+db.shoes.updateMany( {}, { $rename: { "size": "sizeinIndia" } } )
+
+db.shoes.find()
+
+//Renaming an Embedded Document Field Name Using $rename Operator qtyAvlbl to qtyAvailable
+db.shoes.updateMany( { }, { $rename: { "moreDetails.qtyAvlbl": "moreDetails.qtyAvailable" } } )
+
+db.shoes.find()
+
+
+// data set 
+//demonstrate how to rename field in document in mongodb 
+db.employees.drop()
+
+db.employees.insertMany([ 
+{
+_id : 1,
+"employee_name" : "Tom",
+"father_name" : "Thor",
+"department" : "Tester",
+"address" : "London",
+"joining" : 2020,
+"phone_no" : 9856321478,
+"gender" : "Male",
+"age" : 20,
+"salary" : 10000
+},
+{
+"_id" : 2,
+"employee_name" : "John",
+"father_name" : "Mick",
+"department" : "Tester",
+"address" : "NewYork",
+"joining" : 2015,
+"phone_no" : 7896541478,
+"gender" : "Male",
+"age" : 23,
+"salary" : 20000,
+"report_lastDate" : ISODate("2021-08-05T00:00:00Z")
+}
+,
+{
+"_id" : 3,
+"employee_name" : "Ammy john",
+"father_name" : "John",
+"department" : "Software developer",
+"address" : "London",
+"joining" : 2019,
+"phone_no" : 7985631478,
+"gender" : "Female",
+"age" : 26,
+"salary" : 15000
+}
+,
+{
+"_id" : 4,
+"employee_name" : "Jennifer",
+"father_name" : "Reeza Hendricks",
+"department" : "Tester",
+"address" : "USA",
+"joining" : 2020,
+"phone_no" : 7412563278,
+"gender" : "Female",
+"age" : 22,
+"salary" : 20000
+}
+,
+{
+"_id" : 5,
+"employee_name" : "Richard",
+"father_name" : "George",
+"department" : "Tester",
+"address" : "NewYork",
+"joining" : 2018,
+"phone_no" : 8965247418,
+"gender" : "Male",
+"age" : 24,
+"salary" : 
+{
+"first_month" : 15000,
+"second_month" : 18000,
+"bonus" : 2000
+}
+}
+])
+//demonstrate how to rename field in document in mongodb 
+
+db.employees.find()
+
+// rename field joining to joinYear  of employees who belong to Department Tester
+db.employees.updateMany({"department": "Tester"},  
+    {$rename: {"joining": "joinYear"}}) 
+    
+// verify
+db.employees.find({"department": "Tester"}) 
+
+// rename field phone_no to contact_no  
+db.employees.updateMany( {}, {$rename: {"phone_no": "contact_no"}}) 
+
+db.employees.find()
+
+ // rename field phone_no to contact_no   
+// Example 3: Renaming a salary.first_month to salary.fmonth of employee named Richard
+db.employees.update(
+    {"employee_name": "Richard"},  
+    {$rename: {"salary.first_month": "salary.fmonth"}}
+     )  
+
+db.employees.find({"employee_name": "Richard"})

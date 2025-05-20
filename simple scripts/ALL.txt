@@ -1,0 +1,118 @@
+// dataset 
+// DEMONSTARTE WORKING OF  ALL OPERATOR in MONGO DB
+db.product_Mobiles.drop()
+db.product_Mobiles.insertMany([
+{ "_id" : 1, "name" : "IPhone", "price" : 799, "releaseDate" : ISODate("2011-05-14T00:00:00Z"), "spec" : { "ram" : 4, "screen" : 6.5, "cpu" : 2.66 }, "color" : [ "white", "black" ], "storage" : [ 64, 128, 256 ] },
+{ "_id" : 2, "name" : "xTablet", "price" : 899, "releaseDate" : ISODate("2011-09-01T00:00:00Z"), "spec" : { "ram" : 16, "screen" : 9.5, "cpu" : 3.66 }, "color" : [ "white", "black", "purple" ], "storage" : [ 128, 256, 512 ] },
+{ "_id" : 3, "name" : "Redmi Note", "price" : 899, "releaseDate" : ISODate("2015-01-14T00:00:00Z"), "spec" : { "ram" : 12, "screen" : 9.7, "cpu" : 3.66 }, "color" : [ "blue" ], "storage" : [ 16, 64, 128 ] },
+{ "_id" : 4, "name" : "Samsung", "price" : 699, "releaseDate" : ISODate("2020-05-14T00:00:00Z"), "spec" : { "ram" : 8, "screen" : 9.7, "cpu" : 1.66 }, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256, 1024 ] },
+{ "_id" : 5, "name" : "Vivo", "price" : 599, "releaseDate" : ISODate("2022-09-14T00:00:00Z"), "spec" : { "ram" : 4, "screen" : 9.7, "cpu" : 1.66 }, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256 ] }
+])
+// DEMONSTARTE WORKING OF  ALL OPERATOR in MONGO DB AND DISPLAY ONLY NAME AND COLOR
+//METHOD 1
+ db.product_Mobiles.find(
+{ color: {$all: ["black", "white"] }}, { name: 1, color: 1}
+)
+// DEMONSTARTE WORKING OF  AND  OPERATOR  in MONGO DB AND DISPLAY ONLY NAME AND COLOR
+//METHOD 2
+db.product_Mobiles.find(
+    {$and: [ {color: "black"},{color: "white"} ]}, 
+    { name: 1,color: 1}
+)
+    
+// dataset 
+// DEMONSTARTE WORKING OF AND OPERATOR ALONG WITH ALL
+db.student.drop()
+db.student.insertMany([
+                        {  
+                           _id: 1,
+                           name: "ajay",
+                           info: [{"gender": "male", "age": 20}],
+                           hobbies: ["Swimming", "Reading"],
+                           course: ["MongoDB", "Python"],
+                           result: [{"marks":[70,80], "grades":["A","B"]}]
+                        },
+                        {
+                           _id: 2,
+                           name: "Rashmi",
+                           info: [{"gender": "female", "age": 22}],
+                           hobbies: ["Playing", "Drawing"],
+                           course: ["Java", "Python"],
+                           result: [{"marks":[80,99], "grades":["A","C"]}]
+                        },
+                        {
+                           _id: 3,
+                           name: "Asha",
+                           info: [{"gender": "female", "age": 22}],
+                           hobbies: ["Gym", "Travelling"],
+                           course: ["C++", "Python"],
+                           result: [{"marks":[80,99], "grades":["B","C"]}]
+                        },
+                        {
+                           _id: 4,
+                           name: "Nitin",
+                           info: [{"gender": "male", "age": 23}],
+                           hobbies: ["Swimming", "Reading"],
+                           course: ["MongoDB", "Perl"],
+                           result: [{"marks":[85,95], "grades":["A","B"]}]
+                        }
+                     ]
+                  )
+// DEMONSTARTE WORKING OF AND OPERATOR ALONG WITH ALL OPERATOR IN MONGODB
+    
+    db.student.find({ hobbies: { $all: ["Swimming", "Reading"] } })
+    db.student.find({ $and: [ { hobbies: "Swimming" }, { hobbies: "Reading" } ] })
+    db.student.find({ $and: [ { hobbies: "Swimming" }, { hobbies: "Reading" } ] })
+    db.student.find({ "hobbies": { $all: [["Gym","Travelling"]] } }) 
+
+
+    //The following examples use the inventory collection that contains the documents:
+// dataset 
+// DEMONSTARTE WORKING OF  ALL OPERATOR in MONGO DB
+db.appliances.drop()
+
+db.appliances.insertMany([ 
+    {
+       _id: 1,
+       code: "xyz",
+       tags: [ "school", "book", "bag", "headphone", "appliance" ],
+       qty: [
+              { size: "S", num: 10, color: "blue" },
+              { size: "M", num: 45, color: "blue" },
+              { size: "L", num: 100, color: "green" }
+            ]
+    }
+    ,
+    {
+       _id: 2,
+       code: "abc",
+       tags: [ "appliance", "school", "book" ],
+       qty: [
+              { size: "6", num: 100, color: "green" },
+              { size: "6", num: 50, color: "blue" },
+              { size: "8", num: 100, color: "brown" }
+            ]
+    }
+    ,
+    {
+       _id: 3,
+       code: "efg",
+       tags: [ "school", "book" ],
+       qty: [
+              { size: "S", num: 10, color: "blue" },
+              { size: "M", num: 100, color: "blue" },
+              { size: "L", num: 100, color: "green" }
+            ]
+    }
+    ,
+    {
+       _id: 4,
+       code: "ijk",
+       tags: [ "electronics", "school" ],
+       qty: [
+              { size: "M", num: 100, color: "green" }
+            ]
+    }
+    ])
+    // DEMONSTARTE WORKING OF  ALL OPERATOR in MONGO DB
+    db.appliances.find( { tags: { $all: [ "appliance", "school", "book" ] } } )

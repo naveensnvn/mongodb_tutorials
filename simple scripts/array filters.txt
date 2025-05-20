@@ -1,0 +1,282 @@
+//Update All Array Elements That Match arrayFilters
+db.students.drop()
+db.students.drop()
+
+db.students.insertMany( [
+    { "_id" : 1,"name":"Rajesh" ,"grades" : [ 95, 92, 90 ] },
+    { "_id" : 2, "name":"Ruthvi","grades" : [ 98, 100, 102 ] },
+    { "_id" : 3,"name":"Guatham Rao", "grades" : [ 95, 110, 100 ] }
+ ] )
+
+ db.students.updateOne(
+    {"name":"Ruthvi" },
+    { $set: { "grades.$[element]" : 101} },
+    { arrayFilters: [ { "element": { $eq: 98 } } ] }
+ )
+
+ db.students.find()
+
+ db.students.updateMany(
+    { },
+    { $set: { "grades.$[element]" : 200 } },
+    { arrayFilters: [ { "element": { $gte: 100 } } ] }
+ )
+
+ db.students.find()
+
+
+
+ db.students_score.drop()
+
+ db.students_score.insertMany( [
+    {
+       "_id" : 1,
+        "name":" Babu Kamrath",
+       "grades" : [
+          { "grade" : 80, "mean" : 75, "std" : 6 },
+          { "grade" : 85, "mean" : 90, "std" : 4 },
+          { "grade" : 85, "mean" : 85, "std" : 6 },
+       ]
+    },
+    {
+       "_id" : 2,
+       "name":"Abhinandan"
+       "grades" : [
+          { "grade" : 90, "mean" : 75, "std" : 6 },
+          { "grade" : 87, "mean" : 90, "std" : 3 },
+          { "grade" : 85, "mean" : 85, "std" : 4 }
+       ]
+    }
+ ] )
+
+
+
+ db.students_score.updateOne(
+    {  "name":"Abhinandan"},
+    { $inc: { "grades.$[elem].std" : -1 } },
+    { arrayFilters: [ { "elem.grade": { $gte: 90 }, "elem.std": { $gte: 5 } } ] }
+ )
+
+ db.students_score.find({"name":"Abhinandan"})
+
+ 
+ db.students_score.find()
+
+ db.students_score.updateMany(
+    { },
+    { $set: { "grades.$[elem].mean" : 100 } },
+    { arrayFilters: [ { "elem.grade": { $gte: 87 }} ] }
+ )
+ db.students_score.find()
+
+
+ db.players.drop()
+
+ db.players.insertMany([ 
+ { "_id" : 1, "name":"Kavana", "scores" : [ 1, 5, 17 ] },
+{ "_id" : 2,  "name":"Varsha","scores" : [ 8, 17, 18 ] },
+{ "_id" : 3, "name":"Shifa Banu","scores" : [ 15, 11, 8 ] }
+])
+
+db.players.updateOne(
+   { name: "Shifa Banu" },
+   { $set: { "scores.$[e]": 100 } },
+   { arrayFilters: [ { "e": { $gte: 11, $lte: 15 } } ] }
+);
+
+db.players.updateMany(
+   {},
+   { $set: { "scores.$[e]": 100 } },
+   { arrayFilters: [ { "e": { $gte: 1, $lte: 5 } } ] }
+);
+
+
+ db.players.find()
+
+
+ //adavnced
+//$filter
+//Selects a subset of an array to return based on the specified condition. 
+// Returns an array with only those elements that match the condition. The returned elements are in the original order.
+db.sales.insertMany( [
+    {
+       _id: 0,
+       items: [
+          { item_id: 43, quantity: 2, price: 10, name: "pen" },
+          { item_id: 2, quantity: 1, price: 240, name: "briefcase" }
+       ]
+    },
+    {
+       _id: 1,
+       items: [
+          { item_id: 23, quantity: 3, price: 110, name: "notebook" },
+          { item_id: 103, quantity: 4, price: 5, name: "pen" },
+          { item_id: 38, quantity: 1, price: 300, name: "printer" }
+       ]
+    },
+    {
+       _id: 2,
+       items: [
+          { item_id: 4, quantity: 1, price: 23, name: "paper" }
+       ]
+    }
+ ] )
+
+ db.sales.aggregate( [
+    {
+       $project: {
+          items: {
+             $filter: {
+                input: "$items",
+                as: "item",
+                cond: { $gte: [ "$$item.price", 100 ] }
+             }
+          }
+       }
+    }
+ ] )
+
+ db.sales.aggregate( [
+    {
+       $project: {
+          items: {
+             $filter: {
+                input: "$items",
+                as: "item",
+                cond: { $gte: [ "$$item.price", 100 ] },
+                limit: 1
+             }
+          }
+       }
+    }
+ ] )
+
+ db.sales.aggregate( [
+    {
+       $project: {
+          items: {
+             $filter: {
+                input: "$items",
+                as: "item",
+                cond: { $gte: [ "$$item.price", 100] },
+                limit: 5
+             }
+          }
+       }
+    }
+ ] )
+
+ db.sales.aggregate( [
+    {
+       $project: {
+          items: {
+             $filter: {
+                input: "$items",
+                as: "item",
+                cond: { $eq: [ "$$item.name", "pen"] }
+             }
+          }
+       }
+    }
+ ] )
+
+ db.sales.aggregate( [
+    {
+       $project: {
+          items: {
+             $filter: {
+                input: "$items",
+                as: "item",
+                cond: {
+                   $regexMatch: { input: "$$item.name", regex: /^p/ }
+                }
+             }
+          }
+       }
+    }
+ ] )
+
+ db.students4.insertOne(
+   { "_id" : 1,
+      "grades" : [
+        { type: "quiz", questions: [ 10, 8, 5 ] },
+        { type: "quiz", questions: [ 8, 9, 6 ] },
+        { type: "hw", questions: [ 5, 4, 3 ] },
+        { type: "exam", questions: [ 25, 10, 23, 0 ] },
+      ]
+   }
+)
+db.students4.updateMany(
+   {},
+   { $inc: { "grades.$[t].questions.$[score]": 2 } },
+   { arrayFilters: [ { "t.type": "quiz" }, { "score": { $gte: 8 } } ] }
+)
+
+db.students4.updateMany(
+   {},
+   { $inc: { "grades.$[].questions.$[score]": 2 } },
+   { arrayFilters: [  { "score": { $gte: 8 } } ] }
+)
+
+
+      3. Add, Remove, or Modify a Nested Array Inside Another Array
+      // Push a new contact for Alice
+
+
+      db.employees.drop()
+
+    db.employees.insertMany([
+        { 
+            _id:1,
+            firstName: "Yaswanth",
+            lastName: "Gowda",
+            email: "Yaswanthg@abc.com",
+            salary: 50000,
+            skills: [ "Angular", "React", "MongoDB","HTML", "CSS" ]
+        },
+        { 
+            _id:2,
+            firstName: "Harish",
+            lastName: "Babu",
+            email: "Harish.b@abc.com",
+            salary: 8000,
+            skills: [ "Python", "Django","HTML", "CSS",'MongoDB' ]
+        },
+        { 
+            _id:3,
+            firstName: "Manjunath",
+            lastName: "Hiremath",
+            email: "Manjunath@abc.com",
+            salary: 7500,
+            skills: [ "HTML", "CSS","JAVASCRIPTS","HTML", "CSS",'MongoDB' ]
+        },
+        { 
+            _id:4,
+            firstName: "Rajiv",
+            lastName: "p",
+            email: "Rajiv@abc.com",
+            salary: 7000,
+            skills: [ "ASP.NET", "MSSQLSERVER", "C#","HTML", "CSS" ]
+        }
+    ])
+      
+
+    db.employees.find()
+    
+
+
+        db.employees.updateOne(
+            { firstName: "Rajiv"}, 
+            { $set: {"skills.$[element]":"DEVOPS"}},
+            { arrayFilters: [{ element: "HTML" }]})
+
+            db.employees.find()
+
+    
+            db.employees.updateMany(
+               { "skills": "MongoDB" },
+               { $set: { "skills.$[element]": "DOCKER" } },
+               { arrayFilters: [ { "element": "MongoDB" } ] }
+             )
+
+               db.employees.find()

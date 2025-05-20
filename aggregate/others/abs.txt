@@ -1,0 +1,112 @@
+
+//MongoDB $abs Operator
+db.student_details2.drop()
+db.student_details2.insertMany([ 
+    {
+    "_id" :1,
+    "std_name" : "Hamida Ayesha",
+    "gender" : "Female",
+    "class" : "X",
+    "fees" : 5000,
+    "exam_fees" : 500,
+    "age" : 16,
+    "Total_marks" : 405,
+    "Result" : "Pass"
+    },
+    {
+        "_id" :2,
+    "std_name" : "Dileep",
+    "gender" : "Male",
+    "fees" : 4000,
+    "exam_fees" : 500,
+    "class" : "VII",
+    "age" : 15,
+    "Total_marks" : 705,
+    "Result" : "Pass"
+    },
+    {
+        "_id" :3,
+    "std_name" : "Jatin",
+    "gender" : "Male",
+    "fees" : 3000,
+    "exam_fees" : 500,
+    "class" : "V",
+    "age" : 12,
+    " Total_marks" : 450,
+    " Result" : "pass"
+    },
+    {
+        "_id" :4,
+    "std_name" : "Akila ",
+    "gender" : "Female",
+    "fees" : 5000,
+    "exam_fees" : 500,
+    "class" : "X",
+    "age" : 16,
+    "Total_marks" : 750,
+    "Result" : "Pass"
+    },
+    {
+        "_id" :5,
+    "std_name" : "Rashmi",
+    "gender" : "Female",
+    "fees" : 6000,
+    "exam_fees" : 500,
+    "class" : "XI",
+    "age" : 17,
+    " Total_marks" : 450,
+    "Result" : "Pass"
+    },
+    {
+        "_id" :6,
+    "std_name" : "Yogesh",
+    "gender" : "Male",
+    "fees" : 
+    {
+    "school_fees" :4000,
+    "exam_fees" : 500,
+    "pending_fees" : 950,
+    }
+    ,
+    "class" : "V",
+    "age" : 15,
+    "Total_marks" : 450,
+    "Result" : "Pass"
+    }
+])
+//In this example, we are going to 
+// find the total fees (fees + exam_fees) of female student only.
+db.student_details2.aggregate(  
+    [  
+      {$match: {gender : "Female"}},  
+         {  
+             $project:   
+                 {  
+                   name : 1,  
+                   class : 1,  
+                   age : 1,  
+                   Result : 1,   
+                   Total_fees: {$abs: {$add: ["$fees", "$exam_fees"]}}  
+                  }  
+         }  
+    ]  
+   )  
+//In this example, we are going to find the total fees (school_fees + exam_fees + pending_fees) of the student whose name is Yogesh.
+   db.student_details2.aggregate(  
+    [  
+       {$match : {std_name : "Yogesh"}},  
+             {  
+                $project :   
+                        {   
+                            name : 1,   
+                            class : 1,  
+                            age : 1,  
+                            Result : 1,  
+                            Total_fees : {$abs : {$add : ["$fees.school_fees",   "$fees.exam_fees",   "$fees.pending_fees"] }}  
+                         }  
+              }  
+     ]  
+    )  
+
+    
+

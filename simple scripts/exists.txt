@@ -1,0 +1,155 @@
+//The $exists operator matches documents that contain or do not contain a specified field, including documents where the field value is null.
+  Demonstrate how to use  $exists operator in document in mongodb
+
+db.studentsdetails1.insertMany([
+	{ _id: 1, name: 'Abhi', email:'Abhi@gmail.com', address:{City:['Mysore','Banaglore']},verified:false,  gender: 'M', age:20 },
+	{ _id: 2, name: 'Pooja',email:'Pooja@gmail.com', address:{City:['Hubli','Davangere']},verified:false,gender: 'F', age:18},
+	{ _id: 3, name: 'Ryan',email:'Ryan@gmail.com', address:{City:['Mangalore','Udupi']},verified:false,gender: 'M', age:21 },
+	{ _id: 4, regno: 210243, gender: 'M',verified:false, age: 16}
+]);
+
+ //demo of $exist check whether e name  exists in document or not and fetches only those records
+
+db.studentsdetails1.find({name: {$exists: true}});
+
+ //demo of $exist check whether e name  exists in document or not and fetches only those records
+db.studentsdetails1.find({name: {$exists: false}});
+
+
+ //demo of $exist check whether e name  exists in document or not and  age >18
+db.studentsdetails1.find({name: {$exists: true}, age:{$gt:18}});
+
+//Find Documents Where a Nested Field Exists
+db.studentsdetails1.find({ "address.City": { $exists: true } })
+
+//Find Documents Where a Nested Field Exists and age>=21
+db.studentsdetails1.find({ "address.City": { $exists: true },age:{$gte:21} })
+
+//Find Documents Where a Nested Field Exists and age>=21
+db.studentsdetails1.find({ "address.City": { $exists: false },age:{$gte:21} })
+
+//Using $exists in an Update Query
+// query to find email exists ,if exists update verified=true
+db.studentsdetails1.updateMany(
+    { email: { $exists: true } },
+    { $set: { verified: true } }
+   )
+   db.studentsdetails1.find()
+
+//example 3
+db.products_phones.drop()
+db.products_phones.insertMany([
+	{ "_id" : 1, "name" : "IPhone", "price" : 799, "releaseDate" : ISODate("2011-05-14T00:00:00Z"), "spec" : { "ram" : 4, "screen" : 6.5, "cpu" : 2.66 }, "color" : [ "white", "black" ], "storage" : [ 64, 128, 256 ] },
+	{ "_id" : 2, "name" : "Tablet", "price" : 899, "releaseDate" : ISODate("2011-09-01T00:00:00Z"), "spec" : { "ram" : 16, "screen" : 9.5, "cpu" : 3.66 }, "color" : [ "white", "black", "purple" ], "storage" : [ 128, 256, 512 ] },
+	{ "_id" : 3, "name" : "Redmi Note", "price" : 899, "releaseDate" : ISODate("2015-01-14T00:00:00Z"), "spec" : { "ram" : 12, "screen" : 9.7, "cpu" : 3.66 }, "color" : [ "blue" ], "storage" : [ 16, 64, 128 ] },
+	{ "_id" : 4, "name" : "Samsung", "price" : 699, "releaseDate" : ISODate("2020-05-14T00:00:00Z"), "spec" : { "ram" : 8, "screen" : 9.7, "cpu" : 1.66 }, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256, 1024 ] },
+	{ "_id" : 5, "name" : "Vivo", "price" : 599, "releaseDate" : ISODate("2022-09-14T00:00:00Z"), "spec" : { "ram" : 4, "screen" : 9.7, "cpu" : 1.66 }, "color" : [ "white", "orange", "gold", "gray" ], "storage" : [ 128, 256 ] },
+	{ "_id" : 6, "name" : "Oppo", "spec" : { "ram" : 64, "screen" : 9.7, "cpu" : 3.66 }, "color" : [ "black" ], "storage" : [ 1024 ] },
+	{ "_id" : 7, "name" : "Motorola","price": null, "spec" : { "ram" : 64, "screen" : 6.7, "cpu" : 3.66 }, "color" : [ "black", "white" ], "storage" : [ 128 ] }
+])
+
+//query to find price field exists in document,if exists display  name and price
+db.products_phones.find( 
+{price: {$exists: true} }, 
+{name: 1,price: 1 }
+)
+
+// query to check if  profit field exists,it does no exists,hence output will [] blank
+ db.products_phones.find( 
+    {profit: {$exists: true} }, 
+    {name: 1,price: 1 }
+    )
+
+// /query to find price field exists in document,and price >699
+db.products_phones.find(
+    {price: { $exists: true,$gt: 699}}, 
+    {name: 1, price: 1})
+
+//    Create Collection
+db.student_details.drop()
+
+db.student_details.insertMany([
+      {  
+         _id: 1,
+         name: "Nitin Gowda",
+         age: 25,
+         email: "Nitin@gmail.com",
+         marks: 75,
+         Gender:'Male',
+         course: ["SQL", "MongoDB",'hadoop']
+ 
+      },
+      {
+         _id: 2,
+         name: "Pavithra",
+         age: 21,
+         marks: 85,
+         Gender:'Female',
+         course: ["Java", "SQL",'Kotlin']
+      },
+      {
+         _id: 3,
+         name: "Bhumika",
+         age: 20,
+         marks: 70,
+         Gender:'Female',
+         personal: {"phone#": 3627791, "city":"New York"}
+      },
+      {
+         _id: 4,
+         name: "Rajiv",
+         age: 23,
+         email: "Rajiv@gmail.com",
+         marks: 90,
+         Gender:'Male',
+         course: ["Python", "PHP",'Django']
+      }
+   ])
+// query to check if  email field exists and display only thoose records where email exists
+db.student_details.find({email:{$exists:true}})
+// query to check if  email field exists and gender='Male' and display only thoose records where email exists
+db.student_details.find({email:{$exists:true},Gender:'Male'})
+// query to check if  email field exists and gender='Female' and display only thoose records where email exists note output will be blank since email field is not present
+db.student_details.find({email:{$exists:true},Gender:'Female'})
+
+//exists operator with $nin operator
+db.student_details.find( { marks: { $exists: true, $nin: [ 70, 75 ] } } )
+// query to check if  age field exists and age>=21 and display only thoose records where age exists
+db.student_details.find(
+    {age: {$exists: true,$gt: 21}
+});Ananya
+
+// query to check if  course field  does exists display only thoose records where course does not  exists
+db.student_details.find( { course: { $exists: false } } )
+
+
+db.spices.drop()
+
+db.spices.insertMany( [
+    { _id:1,saffron: 5, cinnamon: 5, mustard: null },
+    { _id:2,saffron: 3, cinnamon: null, mustard: 8 },
+    { _id:3,saffron: null, cinnamon: 3, mustard: 9 },
+    { _id:4,saffron: 1, cinnamon: 2, mustard: 3 },
+    { _id:5,saffron: 2, mustard: 5 },
+    {_id:6, saffron: 3, cinnamon: 2 },
+    { _id:7,saffron: 4 },
+    { _id:8,cinnamon: 2, mustard: 4 },
+    { _id:9,cinnamon: 2 },
+    { _id:10,mustard: 6 }
+ ] )
+
+ //demo of $exist check whether spice saffron exists in document or not and fetches only those records
+ db.spices.find( { saffron: { $exists: true } } )
+ //demo of $exist check whether spice cinnamon exists in document or not and fetches only those records
+ db.spices.find({cinnamon:{$exists:true}})
+ //demo of $exist check whether spice cinnamon  exists in document or not and fetches only those records
+ db.spices.find( { cinnamon: { $exists: false } } )
+
+ db.spices.find({ "mustard": { $ne: null } })
+
+// db.spices.find({ "mustard" : { $exists : true, $ne : null } })
+//db.spices.find({ "mustard ": { $exists: true, $ne: null } })
+//example 2
+db,studentsdetails1.drop()
+
+

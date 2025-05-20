@@ -1,0 +1,150 @@
+//The $unset operator deletes a particular field.
+//example 1
+//https://www.mongodbtutorial.org/mongodb-crud/mongodb-min/
+
+////The $unset operator deletes a particular field.
+db.prouducts1.drop()
+
+
+db.prouducts1.insertMany( [
+    { _id:1,"item": "chisel", "code": "C001", "quantity": 4, "instock": true },
+    { _id:2,"item": "hammer", "code": "unknown", "quantity": 3, "instock": true },
+    { _id:3,"item": "nails", "code": "unknown", "quantity": 100, "instock": true }
+ ] )
+
+ db.prouducts1.find()
+
+// unset removees column name or field name 2 fields quantity, instock where  code='unknown'
+ db.prouducts1.updateOne(
+    { code: "unknown" },
+    { $unset: { quantity: "", instock: "" } }
+ )
+
+
+ db.prouducts1.find()
+
+ db.prouducts1.find()
+ 
+ //updateOne() uses the $unset operator to:
+ db.books.drop()
+ //example 2
+db.books.insertMany([ 
+ { 
+    _id:1,
+    name: 'book1',
+    tags: 
+    {
+        words: ['abc','123'],
+        lat: 33,
+        long: 22
+    }   
+}
+,
+ {
+    _id:2,
+name: 'book2',
+tags: 
+{
+    words: ['xyz','123345'],
+    lat: 33,
+    long: 22
+}   
+}
+,
+{
+    _id:3,
+    name: 'book3',
+    tags: 
+    {
+        words: ['abcde','1234'],
+        lat: 33,
+        long: 22
+    }   
+    }
+])
+
+// removes only one nested field tags.words in document
+ db.books.update({}, {$unset: {"tags.words":1}});
+
+ db.books.find()
+
+// removes  all nested field tags.words in document
+ db.books.updateMany({}, {$unset: {"tags.words":1}});
+
+ db.books.find()
+//example 3
+
+//example 8
+db.products123.drop()
+
+db.products123.insertMany([
+    { "_id" : 1, "name" : "xPhone", "price" : 799, "releaseDate": ISODate("2011-05-14"), "spec" : { "ram" : 4, "screen" : 6.5, "cpu" : 2.66 },"color":["white","black"],"storage":[64,128,256]},
+    { "_id" : 2, "name" : "xTablet", "price" : 899, "releaseDate": ISODate("2011-09-01") , "spec" : { "ram" : 16, "screen" : 9.5, "cpu" : 3.66 },"color":["white","black","purple"],"storage":[128,256,512]},
+    { "_id" : 3, "name" : "SmartTablet", "price" : 899, "releaseDate": ISODate("2015-01-14"), "spec" : { "ram" : 12, "screen" : 9.7, "cpu" : 3.66 },"color":["blue"],"storage":[16,64,128]},
+    { "_id" : 4, "name" : "SmartPad", "price" : 699, "releaseDate": ISODate("2020-05-14"),"spec" : { "ram" : 8, "screen" : 9.7, "cpu" : 1.66 },"color":["white","orange","gold","gray"],"storage":[128,256,1024]},
+    { "_id" : 5, "name" : "SmartPhone", "price" : 599,"releaseDate": ISODate("2022-09-14"), "spec" : { "ram" : 4, "screen" : 5.7, "cpu" : 1.66 },"color":["white","orange","gold","gray"],"storage":[128,256]}
+ ])
+
+//The following example uses the $unset operator to remove 2 fields  quantity and instock  field from the document where  name='xPhone' in the products collection:
+db.products123.updateOne(
+    { name: "xPhone" },
+    { $unset: { quantity: "", instock: "" } }
+ )
+
+db.products123.find({ name: "xPhone" })
+
+db.products123.find({name:'xPhone'})
+//2) Using the MongoDB $unset operator to remove a field in an embedded document
+
+// embedded documents of all documents in the products collection:
+//The following statement uses the $unset operator to remove the ram field from the spec 
+// example to remove nested field   spec.ram permanently from document
+db.products123.updateMany({}, {
+    $unset: {
+        "spec.ram": ""
+    }
+})
+
+db.products123.find({}, { spec: 1})
+
+//3) Using the MongoDB Query $unset operator to set storage 1st array elements to null
+db.products123.updateMany({}, { $unset: { "storage.0": "" } })
+
+db.products123.find({}, { "storage":1})
+
+//Using the MongoDB $unset operator to remove multiple fields releaseDate,spec from a document
+db.products123.updateMany({}, {
+    $unset: {releaseDate: "",spec: ""
+    }
+})
+
+
+db.products123.find({}, { name: 1,storage: 1,releaseDate: 1,spec: 1})
+//example 2
+//How to remove a field from a MongoDB Document
+
+db.example.insertMany([
+    { "_id": 1, "name": "Abhinandan", "age": 21, "address": "Highway 37, Canada"},
+    { "_id": 2, "name": "Yasin Sharief", "age": 23, "address": "Lowstreet 27,USA"},
+    { "_id": 3, "name": "Pradeep", "age": 22, "address": "Apple st 652, UK"},
+    { "_id": 4, "name": "Mukesh", "age": 26, "address": "Mountain 21, Canada"},
+    { "_id": 5, "name": "Kushal", "age": 24, "address": "Valley 345, Australia"}
+    ])
+
+    // example to remove  field   age  permanently where name='Kushal'
+    db.example.updateOne( 
+        {"name": "Kushal" }
+        ,
+         { $unset: { "age": " " }}
+         )
+
+
+ db.example.find({'name':'Kushal'})
+       // example to remove  field  age permanently from document  
+
+    db.example.updateMany( 
+        {} , 
+        { $unset: { "age": " " }}
+         
+    )
+    db.example.find({})      

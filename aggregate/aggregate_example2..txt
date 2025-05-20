@@ -1,0 +1,228 @@
+db.createCollection("sales")
+db.sales.drop()
+db.sales.insertMany([
+	{ "_id" : 1, "item" : "Tables", "price" : 5000, "size": "Short", "quantity" : 22, "date" : ISODate("2021-01-15T08:00:00Z") },
+	{ "_id" : 2, "item" : "Chairs", "price" : 600, "size": "Short","quantity" : 12, "date" : ISODate("2015-01-16T09:00:00Z") },
+	{ "_id" : 3, "item" : "Desks", "price" : 1500, "size": "Meduim","quantity" : 25, "date" : ISODate("2020-01-16T09:05:00Z") },
+	{ "_id" : 4, "item" : "Podiums", "price" : 5000,"size": "Tall", "quantity" : 11, "date" : ISODate("2022-02-17T08:00:00Z") },
+	{ "_id" : 5, "item" : "Chairs", "price" : 6000, "size": "Meduim","quantity" : 12, "date" : ISODate("2023-02-18T21:06:00Z") },
+	{ "_id" : 6, "item" : "Desks", "price" : 5250, "size": "Tall","quantity" : 20, "date" : ISODate("2019-02-20T10:07:00Z") },
+	{ "_id" : 7, "item" : "Tables", "price" : 6000,"size": "Tall", "quantity" : 30, "date" : ISODate("2018-02-21T10:08:00Z") },
+	{ "_id" : 8, "item" : "Podiums", "price" :65000, "size": "Meduim","quantity" : 21, "date" : ISODate("2017-02-22T14:09:00Z") },
+	{ "_id" : 9, "item" : "bulbs", "price" : 200, "size": "Meduim","quantity" : 17, "date" : ISODate("2024-02-23T14:09:00Z") },
+	{ "_id" : 10, "item" : "bulbs", "price" : 250, "size": "Tall","quantity" : 15, "date" : ISODate("2017-02-25T14:09:00Z")},
+    { "_id" : 11, "item" : "Chairs", "price" : 1250, "size": "Tall","quantity" : 10, "date" : ISODate("2016-02-25T14:09:00Z")},
+    { "_id" : 12, "item" : "Podiums", "price" : 1250, "size": "Tall","quantity" : 10, "date" : ISODate("2016-02-25T14:09:00Z")}
+
+]);
+//query to group by item using aggregate and group by item
+db.sales.aggregate([
+    {
+        $group:{_id:"$item"}},
+    
+])
+
+
+  //  { $project: { price: 1, size: 1, quantity: 1, size: 1,date:1 } }
+
+//query to find item='Tables' AND "size": "Short" using aggregate and match item=Tables AND "size": "Short
+db.sales.aggregate([
+
+    { $project: { item:1,  price:1,  size:1, quantity:1}},
+{$match:{item:"Tables","size": "Short"}}   
+])
+
+
+//query to find item='Tables' using aggregate and match item=Tables
+//sort by price desc 
+db.sales.aggregate([
+    {
+$match:{item:"Tables",}
+ }
+ ,
+    
+       {$sort:{price:-1}}
+    
+])
+
+
+
+ 
+// to find maximumprice in document using aggregate
+  db.sales.aggregate([
+    {
+   $group:{_id:'',maximumprice:{$max:"$price"}}
+     
+    }
+  ])
+  // to find avgprice in document using aggregate
+  db.sales.aggregate([
+    {
+   $group:{_id:'',avgprice:{$avg:"$price"}}
+     
+    }
+  ])
+
+    // to find sum of price in document using aggregate
+  db.sales.aggregate([
+    {
+   $group:{_id:'',sum:{$sum:"$price"}}
+     
+    }
+  ])
+      // to find minimumprice  of price by item  wise group by item  in document using aggregate and 
+  db.sales.aggregate([
+    {
+   $group:{_id:"$item",
+    avgprice:{$avg:"$price"}}
+     
+    }
+  ])
+
+      // to find maxprice  of price by item  wise group by item  in document using aggregate and $max
+  db.sales.aggregate([
+    {
+   $group:{_id:"$item",
+    maxprice:{$max:"$price"}}
+     
+    }
+  ])
+
+
+
+
+//The following example groups the documents by the 
+//item field and uses the $sumto calculate the total  quantity for each group:
+
+db.sales.aggregate([
+	{ 
+		$match: { item: "Tables" } 
+	},
+	{ 
+		$group: {_id: "$size",totalQty: {$sum: "$quantity"}
+		}
+	},
+	{
+		$sort: { totalQty : -1}		}
+    ])
+
+        
+example groups the documents by the item field and use the $avg to 
+//calculate the average amount for each group:
+
+// eg chairts 7200+6000*12=79200/2=39600
+
+
+  // find avg of price ie quantity* price by items and sort averageAmount in desc
+db.sales.aggregate([
+   
+    {
+        $group:{_id:"$item", averageAmount:{$avg:{$multiply:['$quantity',"$price"]}}}
+    },
+    {$sort:{averageAmount:-1}}
+])  
+    
+//The following example uses the $avg to calculate the average amount per group and 
+//returns the group with the average amount greater than 150:
+
+   // find avg of price ie quantity* price by items wise  and averageAmount>=50000 sort averageAmount in desc
+  
+db.sales.aggregate([
+   
+    {
+        $group:{_id:"$item", averageAmount:{$avg:{$multiply:['$quantity',"$price"]}}}
+    },
+   
+    {
+        $match:{averageAmount:{$gte:50000}}
+    }
+    ,
+    {
+        $sort:{averageAmount:-1}
+    }
+])
+//MongoDB $count
+
+// count no of items and count>2
+  db.sales.aggregate([
+    {
+    $group:{_id:'$item',itemCount:{$count:{}}}
+    },
+    {
+        $match: { itemCount: { $gt: 2 } },
+      },
+
+  ])
+ // MongoDB $sum examples
+// total sum
+
+
+   //query to find sum price of tables whoose  item=Tables
+db.sales.aggregate([
+    {
+      $match:{item:"Tables"},
+  
+    }
+    ,
+    {
+   $group:{_id:'Tables',totalQty:{$sum:"$price"}}
+     
+    }
+  ])
+   //query to find sum price of tables whoose  item=Podiums
+  db.sales.aggregate([
+    {
+      $match:{item:"Podiums"},
+  
+    }
+    ,
+    {
+   $group:{_id:'Podiums',totalQty:{$sum:"$price"}}
+     
+    }
+  ])
+   //query to find lowest price of tables whoose  item=Podiums
+  db.sales.aggregate([
+    {
+      $match:{item:"Podiums"},
+  
+    }
+    ,
+    {
+   $group:{_id:'Podiums',minimumprice:{$min:"$price"}}
+     
+    }
+  ])
+   //query to find lowest price of tables whoose  item=bulbs
+  db.sales.aggregate([
+    {
+      $match:{item:"bulbs"},
+  
+    }
+    ,
+    {
+   $group:{_id:'bulbs',minimumprice:{$min:"$price"}}
+     
+    }
+  ])
+
+ 
+
+
+
+
+
+
+
+
+
+
+   
+
+
+   
+
+
+
+
+

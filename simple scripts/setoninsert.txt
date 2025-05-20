@@ -1,0 +1,299 @@
+//$setOnInsert
+//If an update operation with upsert: true results in an insert of a document, then $setOnInsert assigns the specified values to the fields in the document. 
+// If the update operation does not result in an insert, $setOnInsert does nothing.
+//setOnInsert
+
+db.employee_details4,drop()
+
+db.employee_details4.insertMany([ 
+   {
+    _id:1,
+     name:
+     {
+       firstname:"Yasin",
+       lastname:"Sharief"
+     }
+     ,
+     personal_details:
+     {
+       age:35,
+       contactInfo:9912367345,
+
+     }
+     ,
+     Department:'Finance',
+     Salary:40000,
+     experience_years:4,
+     Cities_Worked:['Mysore','Bangalore']
+
+
+   }
+   ,
+   {
+    _id:2,
+     name:
+     {
+       firstname:"Karnakar",
+       lastname:"Babu"
+     }
+     ,
+     personal_details:
+     {
+       age:45,
+       contactInfo:9912367456,
+
+     }
+     ,
+     Department:'HR Dept',
+     Salary:50000,
+     experience_years:4,
+     Cities_Worked:['Mysore','Bangalore','Manglore']
+   }
+   ,
+   {
+    _id:3,
+     name:
+     {
+       firstname:"Babu",
+       lastname:"Kamrath"
+     }
+     ,
+     personal_details:
+     {
+       age:45,
+       contactInfo:9912367693,
+
+     }
+     ,
+     Department:'HR Dept',
+     Salary:50000,
+     experience_years:4,
+     Cities_Worked:['Mysore','Bangalore','Kodagu']
+   }
+   ,   
+   {
+   _id:4,
+   name:
+   {
+     firstname:"Manjunath",
+     lastname:"Hiremath"
+   }
+   ,
+   personal_details:
+   {
+     age:37,
+     contactInfo:9912367495,
+
+   }
+   ,
+   Department:'Finance',
+   Salary:70000,
+   experience_years:10,
+   Cities_Worked:['Bangalore','Bijapur','Hubli','Belgaum']
+
+ }
+])
+//demo of setOnInsert
+//Example 1: Upsert Results in an Insert
+//In this example, we are creating a new document in the employee_details4 
+// collection with the help of update() method by setting the value of an upsert field to true and using $setOneInsert operator 
+// assign the values to the department and salary fields in the document.
+db.employee_details4.update(
+    { 
+        _id:5,
+      "name.firstname": "Sachin",
+      "name.lastname": "Hegde",
+      "personal_details.age": 24,
+      "personal_details.contactInfo": 345678901
+    },
+    { 
+      $setOnInsert: { department: "Revenue", salary: 25000,Cities_Worked:['Udupi','Manglore','Karwar'] }
+    },
+    { upsert: true }
+  )
+
+  db.employee_details4.find()
+//Example 2: Inserting New Embedded Fields in New Document
+//In this example, we are creating a new document in the employee_details4 
+// collection with the help of update() method by setting the value of an upsert field to true and using $setOneInsert operator 
+// assign the values to embedded fields i.e., in the document.
+
+db.employee_details4.update(
+    { "name.firstname": "Vivek", "name.lastname":"Aradhya","experienceYear": 5 },
+    { 
+      $setOnInsert: {
+        "personal_details.age": 27,
+        "personal_details.contactInfo": 345678901
+      }
+    },
+    { upsert: true }
+  )
+  db.employee_details4.find()
+//Example 3: Effect of $setOnInsert Operator on Matched Documents
+//In this example, we are checking if $setOnInsert operator work with matched document or not. 
+// This $setOnInsert operator does not work with already present documents.
+
+db.employee_details4.update(
+    { "name.firstname": "Ajay" },
+    { 
+      $setOnInsert: {
+        "personal_details.age": 27,
+        "personal_details.contactInfo": 345678901
+      }
+    },
+    { upsert: true }
+  )
+  db.employee_details4.find()
+// example 2
+db.books.drop()
+db.books.insertMany([ 
+    {
+      id: 1,
+      "title": "Introduction to MongoDB",
+      "content": "MongoDB is a document database",
+      "created_at": ISODate("2022-09-14T10:23:41.729Z"),
+      "updated_at": ISODate("2023-09-14T10:23:41.729Z")
+    },
+    {
+      id: 2,
+      "title": "RDBMS",
+      "content": "RDBMS is a RELATIONAL database",
+      "created_at": ISODate("2019-09-14T10:23:41.729Z"),
+      "updated_at": ISODate("2021-09-14T10:23:41.729Z")
+    },
+    { 
+    id: 3,
+    "title": "COMPUTER NETWORK",
+    "content": "COMPUTER NETWORK",
+    "created_at": ISODate("2015-09-14T10:23:41.729Z"),
+    "updated_at": ISODate("2017-09-14T10:23:41.729Z")
+  }
+  ])
+  
+    db.books.updateOne(
+    { title: "COMPUTER NETWORK" },
+    {
+      $setOnInsert: {
+      content: "computer newtwork",
+        created_at: new Date(),
+        updated_at: new Date(),
+        author:'Behrouz A. Forouzan'
+        
+      }
+    },
+    { upsert: true }
+  )
+  db.books.find()
+
+
+  db.books.find()
+  
+  db.books.updateOne(
+      { title: "Introduction to MongoDB" },
+      {
+        $setOnInsert: {
+          content: "This is a new MongoDB article",
+          published_at: new Date(),
+          updated_at: new Date(),
+          author:"Ranjeeth Jha"
+        }
+      },
+      { upsert: true }
+    )
+  
+//example 3
+db.employees4.drop()
+db.employees4.insertMany([
+    { 
+      empId: 1,  
+      name: "Vagesh",
+      Gender:"Male",
+      City:'Mysore',
+      age: 35
+    },
+    { 
+        empId: 2,  
+        name: "Rashmi",
+        Gender:"Female",
+        City:'Banglore',
+        age: 25
+      },
+      { 
+        empId: 3,  
+        name: "Vipin",
+        Gender:"Male",
+        City:'Gulbarga',
+        age: 28
+      },
+      { 
+        empId: 4,  
+        name: "Anusha Shetty",
+        Gender:"Female",
+        City:'Mangalore',
+        age: 22
+      },
+  ])  
+
+  db.employees4.update(
+    {
+        empId: 3
+    }, 
+    {
+      $setOnInsert: 
+      {  
+        dateJoined: new Date(),
+        City:'udupi',
+        age: 26
+      }
+    },
+    {
+        upsert: true}
+  )
+  db.employees4.find({ empId: 3})
+
+//Example 2: Updating an Existing Document
+db.employees4.update(
+    { name: "Vipin"},
+    { 
+      $set: {age: 45}, 
+      $setOnInsert: {dateJoined: new Date(),
+      City:'Hubli',
+
+      }   
+    },
+    {upsert: true}
+  )
+  db.employees4.find( { name: "Vipin"})
+/
+//Example 3: Adding Sub-Documents
+db.employees4.update
+(
+    {name: "Rashmi"},
+{
+  $setOnInsert: 
+  {    
+    address: 
+    {
+      line1: "Richmond Road",
+      city: "Bangalore",  
+      state: "Karnataka"
+    }
+  }
+},
+{
+    upsert: true}  
+)
+db.employees4.find( { name: "Rashmi"})
+
+          )
+//Here‘s what happens in detail
+//Tries to match document with empId 3
+//Since no match found, performs an insert with upsert=true
+//The $setOnInsert operation sets dateJoined to current date/time
+
+  
+
+
+
+
+

@@ -1,0 +1,501 @@
+// update statement
+db.studentdetailsupdate.drop()
+
+db.studentdetailsupdate.insertMany([
+    { _id: 1, 
+       name: "Manasa", 
+       age: 25, 
+        grades: [
+        { grade: "Maths", score: 80 },
+        { grade: "Science", score: 85 }
+      ]
+    },
+    { _id: 2, name: "Deepak", 
+    age: 30, 
+     grades: [
+        { grade: "Maths", score: 85 },
+        { grade: "Science", score: 90 }
+      ]
+    },
+    { _id: 3, name: "Chandrasekar",
+         age: 35, 
+         grades:
+          [
+        { grade: "Maths", score: 95 },
+        { grade: "Science", score: 88 }
+      ]
+    }
+  ]
+)
+//update age =26 whoose name is  Manasa
+ db.studentdetailsupdate.updateOne({name:"Manasa"},{$set:{age:20}})
+ db.studentdetailsupdate.find({name:"Manasa"})
+
+//increment age by 1  whoose name is  Chandrasekar
+ db.studentdetailsupdate.updateOne({ name: "Chandrasekar" },{ $inc: { age: 1 } })
+
+ db.studentdetailsupdate.find({name:"Chandrasekar"})
+
+// example of upsert 
+ db.studentdetailsupdate.updateOne(
+
+    { name: "Jesmitha" },
+    { $set: { age: 30 } },
+    { upsert: true }
+ )
+
+ db.studentdetailsupdate.find()
+
+
+//arrayFilters //Determines which array elements to modify for an update operation on an array field:
+//update  maths score to 95 using $[elem] and array filters of student name Deepak
+ db.studentdetailsupdate.updateOne(
+    { name: "Deepak" },
+    { $set: { "grades.$[elem].score": 95 } },
+    { arrayFilters: [ { "elem.grade": { $eq: "Maths" } } ] }
+ )
+
+ db.studentdetailsupdate.find({name:"Deepak"})
+
+// ex2
+db.empDetailsUpdate.drop()
+
+db.empDetailsUpdate.insertMany(
+        [
+            {
+                _id:1,
+                First_Name: "Radhika",
+                Last_Name: "Sharma",
+                Age: "26",
+                e_mail: "radhika_sharma.123@gmail.com",
+                phone: "9000012345"
+            },
+            {
+                _id:2,
+                First_Name: "Rachel",
+                Last_Name: "Christopher",
+                Age: "27",
+                e_mail: "Rachel_Christopher.123@gmail.com",
+                phone: "9000054321"
+            },
+            {
+                _id:3,
+                First_Name: "Fathima",
+                Last_Name: "Sheik",
+                Age: "24",
+                e_mail: "Fathima_Sheik.123@gmail.com",
+                phone: "9000054321"
+            }
+        ]
+    )
+//findOneAndUpdate
+//example of findOneAndUpdate and update multiple condition
+db.empDetailsUpdate.findOneAndUpdate
+(
+    {First_Name:"Radhika"},
+    {$set:{"Age":30,"e_mail":"radha@gmail.com","phone":9912367856}}
+)
+
+
+db.empDetailsUpdate.find({First_Name:"Radhika"})
+
+//example of updateOne --update age,email of First_Name--Radhika
+db.empDetailsUpdate.updateOne(
+	{
+    First_Name: 'Radhika'},
+	{ $set: { Age: '34',e_mail: 'radhika_newemail@gmail.com'}}
+)
+db.empDetailsUpdate.find({First_Name:"Radhika"})
+
+//update many records  whoose age>=24  to 46
+db.empDetailsUpdate.updateMany
+( {"Age":{$gte:"24"}},{$set:{"Age":46}} )
+
+db.empDetailsUpdate.find()
+
+
+//MongoDB: Update Arrays in Documents
+db.employees1.drop()
+
+db.employees1.insertMany([
+    { 
+        _id:1,
+        firstName: "Harshitha ",
+        lastName: "URS",
+        email: "Harshitha@abc.com",
+        salary: 5000,
+        skills: [ "Angular", "React", "MongoDB" ]
+    },
+    { 
+        _id:2,
+        firstName: "Sachin",
+        lastName: "T",
+        email: "sachin.t@abc.com",
+        salary: 8000,
+        skills: [ "Accounting", "Tax" ]
+    },
+    { 
+        _id:3,
+        firstName: "Ajay",
+        lastName: "kumar",
+        email: "Ajay@abc.com",
+        salary: 7500,
+        skills: [ "Sales", "Marketing" ]
+    },
+    { 
+        _id:4,
+        firstName: "Hemanth",
+        lastName: "Gowda",
+        email: "steve.j@abc.com",
+        salary: 7000,
+        skills: [ "Mac", "Marketing", "Product Design" ]
+    },
+    { 
+        _id:5,
+        firstName: "Kapil",
+        lastName: "Sharma",
+        email: "kapil.d@abc.com",
+        salary: 4500,
+        skills: [ "Accounting", "Tax", "Sales" ]
+    },
+    { 
+        _id:6,
+        firstName: "Amitabh",
+        lastName: "B",
+        email: "amitabh.b@abc.com",
+        salary: 7000,
+        skills: [ "Marketing", "Tax" ]
+    }
+])
+
+// updateMany update salary=7000 to salary=8500
+db.employees1.updateMany({ salary:7000 }, { $set: { salary:8500 }})
+db.employees1.find()
+
+// updateMany update salary>=8500 to salary=9000
+db.employees1.updateMany({ salary:{$gte:8500 }}, { $set: {salary:9000 }})
+db.employees1.find()
+
+//update location='Mumbai' whoose firstName is Amitabh
+db.employees1.updateMany({firstName:"Amitabh"}, { $set: {location: "Mumbai"}})
+
+db.employees1.find({firstName:"Amitabh"})
+
+// add extra field location to  employees document updateMany
+db.employees1.updateMany({}, { $set: {location: "Mysore"}})
+db.employees1.find()
+//increment salary by 5000 if salary>=4500
+db.employees.updateMany({salary:{$gte:4500}}, { $inc: {salary: 500}})
+db.employees1.find()
+
+
+db.employees.updateMany({firstName:"Amitabh"}, { $set: {lastName:"Bachan", salary:2000}})
+
+
+db.employees1.find()
+
+
+//https://www.mongodb.com/docs/manual/reference/method/db.collection.update/
+
+
+db.SCORES.DROP()
+
+db.SCORES.insertMany( [
+    { "_id" : 1, "grades" : [ 95, 92, 90 ] },
+    { "_id" : 2, "grades" : [ 98, 100, 102 ] },
+    { "_id" : 3, "grades" : [ 95, 110, 100 ] }
+ ] )
+ 
+////Update Elements Match arrayFilters Criteria
+/// if  grades >100 update to 100 using array filters and updatemany
+ db.SCORES.update(
+    { grades: { $gte: 100 } },
+    { $set: { "grades.$[element]" : 100 } },
+    {
+      multi: true,
+      arrayFilters: [ { "element": { $gte: 100 } } ]
+    }
+ )
+
+ db.SCORES.find()
+ 
+ db.students2.drop()
+ db.students2.insertMany( [
+    {
+      "_id" : 1,
+      "grades" : [
+         { "grade" : 80, "mean" : 75, "std" : 6 },
+         { "grade" : 85, "mean" : 90, "std" : 4 },
+         { "grade" : 85, "mean" : 85, "std" : 6 }
+      ]
+    },
+    {
+       "_id" : 2,
+       "grades" : [
+          { "grade" : 90, "mean" : 75, "std" : 6 },
+          { "grade" : 87, "mean" : 90, "std" : 3 },
+          { "grade" : 85, "mean" : 85, "std" : 4 }
+       ]
+    }
+  ] )
+  
+  //To modify the value of the mean field for all elements in the grades array 
+  // where the grade is greater than or equal to 85, use the filtered positional operator $[<identifier>] with the arrayFilters:
+
+  db.students2.update(
+     { },
+     { $set: { "grades.$[elem].mean" : 100 } },
+     {
+       multi: true,
+       arrayFilters: [ { "elem.grade": { $gte: 85 } } ]
+     }
+  )
+
+  db.students2.find()
+ //The db.collection.explain().update() does not modify the documents
+  
+
+
+//https://www.geeksforgeeks.org/mongodb-update-operators/
+
+
+db.products.drop()
+
+db.products.insertMany([
+    {
+        _id:1,
+        name: "Laptop",
+        price: 1000,
+        tags: ["electronics", "computer"],
+        stock: 50
+    },
+    {
+        _id:2,
+        name: "Smartphone",
+        price: 800,
+        tags: ["electronics", "mobile"],
+        stock: 30
+    }
+])
+// add 100 to price whoose name is laptop
+db.products.updateOne(
+    { name: "Laptop" },
+    { $mul: { price: 1.1 } 
+}
+)
+
+db.products.find( { name: "Laptop" })
+
+// add new field sale to tag array using push to name='Smartphone' using updateOne
+db.products.updateOne(
+    { name: "Smartphone" },
+    { $push: { tags: "sale" } }
+)
+
+db.products.find( { name: "Smartphone" })
+
+db.products.find()
+
+
+
+//use baeldung;
+//db.createCollection(student);
+db.student.insertMany([
+    {
+        "student_id": 8764,
+        "student_name": "Yogesh K S",
+        "address": "Hostel 1",
+        "age": 16,
+        "roll_no":199406
+    },
+    {
+        "student_id": 8765,
+        "student_name": "Manjunath H",
+        "address": "Hostel 2",
+        "age": 18,
+        "roll_no":199408
+    }
+]);
+// demo replace one 
+db.student.replaceOne(
+    { 
+        "student_id": 8764
+    },
+    {
+        "student_id": 8764,
+        "student_name": "Geetha",
+        "address": "Hostel 2",
+        "age": 18,
+        "roll_no":199406
+    }
+);
+db.student.find({"student_id": 8764})
+
+
+//demo findOneAndReplace 
+db.student.findOneAndReplace(
+    { 
+        "student_id" : { 
+            $eq : 8765 
+        }
+    },
+    { 
+        "student_id" : 8765,
+        "student_name" : "Mahadevswamy",
+        "address": "Hostel 2",
+        "age": 18,
+        "roll_no":199406 
+    },
+    {
+        returnNewDocument: false
+    }
+);
+db.student.find({"student_id": 8765})
+
+db.student.findOneAndReplace(
+    { 
+        "student_id" : {
+        $eq : 8764 
+        } 
+    },
+    { 
+        "student_id" : 8764, 
+        "student_name" : "amit kumar",
+        "address": "Hostel 2",
+        "age": 18,
+        "roll_no":199406 
+    },
+    { 
+        projection: { "_id" : 0, "student_id":1, "age" : 1 
+        } 
+    }
+);
+
+db.student.find({"student_id": 8764})
+
+
+
+db.student.find({"student_id": 8764})
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//complex example
+db.books.insertMany([
+    {
+      "_id" : 1,
+      "item" : "Mastering Python",
+      "stock" : 0,
+      "info" : { "publisher" : "1111", "pages" : 430 },
+      "tags" : [ "technology", "computer" ],
+      "ratings" : [ { "by" : "ijk", "rating" : 4 }, { "by" : "lmn", "rating" : 5 } ],
+      "reorder" : false
+     },
+     {
+      "_id" : 2,
+      "item" : "Learning C",
+      "stock" : 15,
+      "info" : { "publisher" : "5555", "pages" : 150 },
+      "tags" : [ ],
+      "ratings" : [ { "by" : "xyz", "rating" : 5 } ],
+      "reorder" : false
+     }
+  ]);
+  db.books.update( { _id: 1 }, { $unset: { tags: 1 } } )
+  
+  db.books.update(
+      { _id: 2 },
+      {
+        $push: { ratings: { "by" : "jkl", "rating" : 2 } }
+      }
+   )
+   
+   db.books.update(
+      { _id: 1 },
+      {
+        $inc: { stock: 5 },
+        $set: {
+          item: "ABC123",
+          "info.publisher": "2222",
+          tags: [ "software" ],
+          "ratings.1": { by: "xyz", rating: 3 }
+        }
+      }
+   )
+   
+   db.books.update(
+      { stock: { $lte: 10 } },
+      { $set: { reorder: true } },
+      { multi: true }
+   )
+   
+  
+   db.books.update(
+      { item: "ZZZ135" },  // Query parameter
+      { $set:
+         {
+            item: "ZZZ135", stock: 5, tags: [ "database" ]  // Replacement document
+         }
+      },
+      { upsert: true }  // Options
+   )
+  
+   db.books.update(
+      { item: "BLP921" },   // Query parameter
+      {                     // Update document
+         $set: { reorder: false },
+         $setOnInsert: { stock: 10 }
+      },
+      { upsert: true }      // Options
+   )
+   
+   db.books.insertMany( [
+      {
+        _id: 5,
+        item: "RQM909",
+        stock: 18,
+        info: { publisher: "0000", pages: 170 },
+        reorder: true
+      },
+      {
+        _id: 6,
+        item: "EFG222",
+        stock: 15,
+        info: { publisher: "1111", pages: 72 },
+        reorder: true
+      }
+    ] )
+    
+    db.books.update(
+      { stock: { $gte: 10 } },        // Query parameter
+      {                               // Update document
+        $set: { reorder: false, tags: [ "literature", "translated" ] }
+      },
+      { upsert: true, multi: true }   // Options
+   )
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//COMPKEX
+db.students3.insertMany( [
+    { "_id" : 1, "tests" : [ 95, 92, 90 ], "lastUpdate" : ISODate("2019-01-01T00:00:00Z") },
+    { "_id" : 2, "tests" : [ 94, 88, 90 ], "lastUpdate" : ISODate("2019-01-01T00:00:00Z") },
+    { "_id" : 3, "tests" : [ 70, 75, 82 ], "lastUpdate" : ISODate("2019-01-01T00:00:00Z") }
+ ] )
+ 
+ db.students3.update(
+    { },
+    [
+      { $set: { average : { $trunc: [ { $avg: "$tests" }, 0 ] }, lastUpdate: "$$NOW" } },
+      { $set: { grade: { $switch: {
+                            branches: [
+                                { case: { $gte: [ "$average", 90 ] }, then: "A" },
+                                { case: { $gte: [ "$average", 80 ] }, then: "B" },
+                                { case: { $gte: [ "$average", 70 ] }, then: "C" },
+                                { case: { $gte: [ "$average", 60 ] }, then: "D" }
+                            ],
+                            default: "F"
+      } } } }
+    ],
+    { multi: true }
+ )
+
+
+

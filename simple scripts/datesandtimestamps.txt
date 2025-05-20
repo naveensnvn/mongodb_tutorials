@@ -1,0 +1,91 @@
+
+//$currentDate
+//The $currentDate operator sets the value of a field to the current date, 
+//either as a Date or a timestamp. The default type is Date.
+
+db.dates.drop()
+// query how to insert current date ,current datetime stamp and dates in other format
+
+db.dates.insertOne({ _id:1,name: "Bob",timestamp: (new Date()).toString()});
+
+db.dates.insertMany([
+    {
+        _id:2,
+        'name': "timestamp",
+        timestamp: new Date().toString(),
+    },
+    {
+        _id:3,
+        'name': "Created with Date()",
+        date: Date(),
+    },
+    {
+        _id:4,
+        'name': "Created with new Date()",
+        date: new Date(),
+    },
+    {
+        _id:5,
+        'name': "Created with ISODate()",
+        date: ISODate(),
+    },
+    {
+        _id:6,
+        'name': 'Future date',
+        date: ISODate('2040-10-28T23:58:18Z'),
+      },
+    {
+        _id:7,
+      'name': 'Past date',
+      date: new Date('1852-01-15T11:25'),
+    },
+    {
+    _id:8,
+    'name': ' Timestamp',
+    date: new Timestamp(),
+   },
+   {
+   _id:9,
+   'name': ' Insert Date',
+   date: ISODate(),
+  },
+  {
+    _id:10,
+    'name': ' Insert Date',
+    date: new Date("2020-01-21")
+   },
+])
+
+db.dates.find()
+
+
+db.books.drop
+
+db.books.insertMany([
+    {
+        "_id": 1,
+        "title": "Introduction to MongoDB",
+        "content": "MongoDB is a document database",
+        "created_at": new Date(),
+        "updated_at": new Date()
+      },
+      {
+        "_id": 2,
+        "title": "Introduction to RBMS",
+        "content": "This is a new RBBMS article",
+        "published_at": ISODate("2023-03-09T02:54:11.526Z"),
+        "updated_at": ISODate("2024-03-09T02:54:11.526Z")
+      }
+])
+db.books.find()
+
+
+db.books.aggregate([
+    { $match: { title: "Introduction to RBMS" } },
+    { 
+        $project:
+         {
+        result: { $subtract: ["$published_at", "$updated_at"] }
+      }
+    }
+  ])

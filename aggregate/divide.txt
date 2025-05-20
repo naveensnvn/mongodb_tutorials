@@ -1,0 +1,186 @@
+db.products.drop()
+
+db.products.insertMany([ 
+    {
+    _id : 1,
+    "name" : "Mobile",
+    "totalPrice" : 100000,
+    "totalQuantity" : 5,
+    "billYear" : 2018
+    }
+    ,
+    {
+    _id : 2,
+    "name" : "Keyboard",
+    "totalPrice" : 5000,
+    "totalQuantity" : 10,
+    "billYear" : 2017
+    }
+    ,
+    {
+    _id : 3,
+    "name" : "Mouse",
+    "totalPrice" : 2000,
+    "totalQuantity" : 5,
+    "billYear" : 2018
+    }
+    ,
+    {
+    _id : 4,
+    "name" : "Memory Card",
+    "totalPrice" : 2500,
+    "totalQuantity" : 2,
+    "billYear" : 2019
+    }
+    ,
+    {
+    _id : 5,
+    "name" : "Mobile",
+    "totalPrice" : 20000,
+    "totalQuantity" : 4,
+    "billYear" : 2020
+    }
+    ,
+    {
+    _id : 6,
+    "name" : "Mobile",
+    "totalPrice" : 25000,
+    "totalQuantity" : 5,
+    "billYear" : 2021
+    }
+    ,
+    {
+    _id : 7,
+    "name" : "Memory Card",
+    "totalPrice" : 1000,
+    "totalQuantity" : 10,
+    "billYear" : 2019
+    }
+    ,
+    {
+    "_id" : 8,
+    "name" : "Pen drive",
+    "totalPrice" : 15000,
+    "totalQuantity" : 2,
+    "billYear" : 2018
+    }
+    ,
+    {
+        "_id" : 9,
+        "name" : "Laptop",
+        "billDetail" : 
+        {
+        "totalPrice" : 45000,
+        "totalQuantity" : 2,
+        },
+        "billYear" : 2021
+        }
+    ,
+    { 
+        _id : 10,
+        "name" : "Memory Carde",
+        "totalPrice" : 4000,
+        "totalQuantity" : 5,
+        "billYear" : 2020
+        }
+    
+    ])
+
+// to find highest and lowest price in products using aggregate
+db.products.aggregate([
+    { 
+        "$group": {_id: null,"MaxPrice": { "$max": "$totalPrice" }, "MinPrice": { "$min": "$totalPrice" }}
+    }
+])
+// to find highest and lowest price for products=Mobile using aggregate
+db.products.aggregate([
+    { 
+        $match: { name: 'Mobile' } 
+    },
+    { 
+        $group: { _id: null,MaxPrice: { $max: "$totalPrice" },MinPrice: { $min: "$totalPrice" }
+        }
+    }
+])
+
+
+//Example 1: Using $divide operator
+// to find product price by dividing  totalPrice/totalQuantity using aggregate
+   db.products.aggregate(
+    [
+        {   $project:   {  name : 1,  totalPrice : 1,  totalQuantity : 1,  
+            Price : {$divide: ["$totalPrice", "$totalQuantity"]}   }  
+        }
+    ]
+ )
+ 
+
+//Example 1: Using $divide operator
+// query to calucate mobile price got totalPrice/totalQuantity using aggregate
+db.products.aggregate(  
+    [  
+      {$match: { name : "Mobile"}},  
+         {  
+             $project:   {  name : 1,  totalPrice : 1,  totalQuantity : 1,  
+                   mobilePrice : {$divide: ["$totalPrice", "$totalQuantity"]}  
+                  }  
+         }  
+    ]  
+   )  
+
+  
+//Example 2: Add your own number
+
+//If the user wants to divide a field by a certain number, the user can do so. In this example, we're going to divide the "totalPrice" field by 2.
+// query to calucate "Memory Card half  price got totalPrice/2 using aggregate
+db.products.aggregate(  
+    [  
+      {$match: { name : "Memory Card"}},  
+         {  
+             $project:   {    name : 1,  totalPrice : 1,  halfPrice : { $divide : [ "$totalPrice", 2 ]}  }  
+         }  
+    ]  
+   )  
+  // Example 3: Wrong data type
+
+//The $divide operator only supports integer data types. If the value is not an integer, it gives an error.
+db.products.aggregate(  
+    [  
+      {$match: { name : "Laptop"}},  
+         {  
+             $project:   {  name : 1,  totalPrice : 1,  totalQuantity : 1,  
+                   mobilePrice : {$divide: ["$totalPrice", "$totalQuantity"]}  
+                  }  
+         }  
+    ]  
+   )  
+
+  // Example 4: Using $divide operator in the embedded document
+
+//In this example, we're going to divide the total price of the laptop by 2.
+// query to find laptop half price by using formaula billDetail.totalPrice/2 using 
+//aggregate
+db.products.aggregate(  
+ [  
+   {$match: { name : "Laptop"}},  
+      {  
+ $project:   {   name : 1,  halfPrice : {$divide: ["$billDetail.totalPrice", 2]}  }  
+      }  
+ ]  
+)  
+
+db.conferencePlanning.drop()
+
+db.conferencePlanning.insertMany( [
+    { "_id" : 1, "city" : "New York", "hours" : 80, "tasks" : 7 },
+    { "_id" : 2, "city" : "Singapore", "hours" : 40, "tasks" : 4 }
+ ] )
+
+ //The following aggregation uses the $divide expression to divide 
+ // query to compute no of  working  hours field by a by dividing hours/8
+ db.conferencePlanning.aggregate(
+    [
+      { $project: { city: 1, workdays: { $divide: [ "$hours", 8 ] } } }
+    ]
+ )
+

@@ -1,0 +1,275 @@
+//Delete Documents
+
+db.orders.deleteOne( { expiryts: { $lt: ISODate("2015-11-01T12:40:15Z") } } );
+
+db.members.drop()
+
+db.members.insertMany( [
+  { _id: 1, student_name: "Monith", grade: "F", points: 0 },
+  { _id: 2, student_name: "Junaid", grade: "A", points: 60 },
+  { _id: 3, student_name: "nitin", grade: "F", points:  0 },
+  { _id: 4, student_name: "Yogesh", grade: "D", points: 20 },
+  { _id: 5, student_name: "Nannya", grade: "F", points:  0 },
+  { _id: 6, student_name: "Hemanth", grade: "A", points: 86 }
+] )
+
+db.members.find()
+// simple delete statement
+db.members.deleteOne(
+    { student_name: "Hemanth" }
+  )
+  db.members.find()
+// simple delete statement using two conditions ie $lte and filed grade
+// student_name yogesh will be deleted
+db.members.deleteOne(
+  { points: { $lte: 20 }, grade: "F" }
+)
+
+db.members.find()
+
+db.orders.drop()
+
+db.orders.insertMany([ 
+  {
+     _id: 1,
+     stock: "IPhone",
+     qty: 250,
+     type: "phone",
+     price: 89048.90,
+     manufactured_date: ISODate("2015-11-01T12:30:15Z"),
+     expired_date: ISODate("2015-11-01T12:35:15Z"),
+     client: "Indian  Inc."
+  }
+  ,
+  {
+    _id: 2,
+    stock: "Dell",
+    qty: 250,
+    type: "Laptops",
+    price: 70000.90,
+    manufactured_date: ISODate("2018-11-01T12:30:15Z"),
+    expired_date: ISODate("2020-11-01T12:35:15Z"),
+    client: "Indian  Inc."
+ }
+])
+
+db.orders.find()
+
+db.orders.deleteMany( { "client" : "Indian  Inc." } );
+
+db.orders.find()
+
+db.orders.deleteMany( { "stock" : "Dell", "price" : { $lte : 75000 } } );
+
+db.orders.find()
+
+db.restaurants.drop()
+
+db.restaurants.insertMany( [
+  { _id: 1, category: "café", status: "A" },
+  { _id: 2, category: "cafe", status: "a" },
+  { _id: 3, category: "cafE", status: "a" }
+] )
+
+db.restaurants.deleteMany(
+  { category: "cafe", status: "A" },
+  { collation: { locale: "fr", strength: 1 } }
+)
+
+db.restaurants.find()
+
+db.inventory.drop()
+
+db.inventory.insertMany([
+  {
+    item: 'journal',
+    qty: 25,
+    size: { h: 14, w: 21, uom: 'cm' },
+    status: 'A'
+  },
+  {
+    item: 'notebook',
+    qty: 50,
+    size: { h: 8.5, w: 11, uom: 'in' },
+    status: 'P'
+  },
+  {
+    item: 'paper',
+    qty: 100,
+    size: { h: 8.5, w: 11, uom: 'in' },
+    status: 'D'
+  },
+  {
+    item: 'planner',
+    qty: 75,
+    size: { h: 22.85, w: 30, uom: 'cm' },
+    status: 'D'
+  },
+  {
+    item: 'postcard',
+    qty: 45,
+    size: { h: 10, w: 15.25, uom: 'cm' },
+    status: 'A'
+  }
+]);
+
+// example of delete many
+db.inventory.deleteMany({ status: 'A' });
+db.inventory.find()
+// example of delete many
+db.inventory.deleteMany({ status: 'A' },{'size.h':10});
+db.inventory.find()
+
+db.inventory.deleteOne({ status: 'D' });
+
+db.inventory.deleteMany({});
+
+db.inventory.find()
+
+db.products.drop()
+//db.student.deleteOne({age:{$lt:18}})
+db.products.insertMany([
+  { "_id" : 1, "name" : "xPhone", "price" : 799, "releaseDate": ISODate("2012-05-14"), "spec" : { "ram" : 4, "screen" : 6.5, "cpu" : 2.66 },"color":["white","black"],"storage":[64,128,256]},
+  { "_id" : 2, "name" : "xTablet", "price" : 899, "releaseDate": ISODate("2011-09-01") , "spec" : { "ram" : 16, "screen" : 9.5, "cpu" : 3.66 },"color":["white","black","purple"],"storage":[128,256,512]},
+  { "_id" : 3, "name" : "SmartTablet", "price" : 899, "releaseDate": ISODate("2015-01-14"), "spec" : { "ram" : 12, "screen" : 9.7, "cpu" : 3.66 },"color":["blue"],"storage":[16,64,128]},
+  { "_id" : 4, "name" : "SmartPad", "price" : 699, "releaseDate": ISODate("2020-05-14"),"spec" : { "ram" : 8, "screen" : 9.7, "cpu" : 1.66 },"color":["white","orange","gold","gray"],"storage":[128,256,1024]},
+  { "_id" : 5, "name" : "SmartPhone", "price" : 599,"releaseDate": ISODate("2022-09-14"), "spec" : { "ram" : 4, "screen" : 9.7, "cpu" : 1.66 },"color":["white","orange","gold","gray"],"storage":[128,256]}
+])
+// delete product price between 750 and 800
+db.products.deleteOne({ _id: 1 })
+db.products.deleteOne({})
+
+db.products.deleteMany({ price:{$gte:750}},{price:{$lte:800} })
+db.products.find()
+
+db.orders.deleteMany({ status: "Cancelled" }, { writeConcern: { w: "majority" } });
+
+
+//delete products using date range
+db.products.deleteMany(
+    { releaseDate: { $gte: new Date("2015-01-14")}},{releaseDate: { $lte: new Date("2022-09-14")}} 
+)
+db.products.find()
+
+
+db.employees.drop()
+
+db.employees.insertMany([
+    { name: "John Doe", age: 25, department: "Sales", salary: 50000 },
+    { name: "Jane Smith", age: 35, department: "Marketing", salary: 60000 },
+    { name: "Bob Johnson", age: 45, department: "Sales", salary: 55000 },
+    { name: "Alice Brown", age: 30, department: "HR", salary: 52000 }
+])
+
+// deletemany with salary greater than 55000
+db.employees.deleteMany({department: "Sales",salary: { $lt: 55000 }
+})
+db.employees.find()
+db.employees.deleteMany({ age: { $gt: 40 } })
+db.employees.find()
+
+db.employees.findOneAndDelete({'name' : 'Alice Brown'})
+db.employees.find()
+
+
+db.candidates.drop()
+db.candidates.insertMany([
+  { "_id": 101, "name": "Akash", "position": "Senior Developer", "dept": "R&D" },
+  { "_id": 102, "name": "Rajesh", "position": "Data Scientist", "dept": "R&D" },
+  { "_id": 103, "name": "Varsha", "position": "Marketing Manager", "dept": "Marketing" },
+  { "_id": 104, "name": "Suchithra", "position": "Senior Developer", "dept": "R&D" },
+  { "_id": 105, "name": "Dechamma", "position": "SEO specialist", "dept": "Marketing" },
+  { "_id": 106, "name": "Sushma", "position": "Network Admin", "dept": "IT" }
+]);
+// delete one
+db.candidates.deleteOne({});
+// delete many with 2 conditions
+db.candidates.deleteMany({ "dept": "Marketing" },{position:'Senior Developer'})
+db.candidates.find()
+
+//Deleting documents based on embedded fields
+
+db.workers.drop()
+
+db.workers.insertMany([
+  { "_id": 101, 
+    "name": "Mahesh", 
+    "position": 
+    { 
+      "title": "Senior Developer", 
+      "dept": "R&D",
+      "skills": [ "Java", "SQL", "Python", "PHP" ],
+      "yrs_exp": 18 
+    } 
+    },
+  { "_id": 102, 
+    "name": "Prakruthi", 
+    "position": 
+    { 
+      "title": "Data Scientist", 
+      "dept": "R&D",
+      "yrs_exp": 14 } 
+    },
+  { "_id": 103, 
+    "name": "Nitin", 
+    "position": 
+    { 
+      "title": "Marketing Manager", 
+      "dept": "Marketing",
+      "yrs_exp": 22 } 
+    },
+  { "_id": 104, 
+    "name": "Ajay Kumar", 
+    "position": { 
+      "title": "Senior Developer", 
+      "dept": "R&D",
+      "skills": [ "Java", "Csharp", "Python", "R" ],
+      "yrs_exp": 6 } 
+    },
+  { "_id": 105, 
+    "name": "Sanjay Gowda", 
+    "position": { 
+      "title": "SEO Specialist", 
+      "dept": "Marketing",
+      "yrs_exp": 7 } 
+    },
+  { "_id": 106, 
+    "name": "Shivakumar", 
+    "position": 
+    { 
+      "title": "Network Admin", 
+      "dept": "IT",
+      "yrs_exp": 11
+     }
+     },
+  { "_id": 107, 
+    "name": "Monika", 
+    "position":
+     { 
+      "title": "Developer", 
+      "dept": "R&D",
+      "skills": [ "Haskell", "Fortran", "Smalltalk", "COBOL" ],
+      "yrs_exp": 8
+     } 
+    }
+]);
+//The insertMany statement adds seven documents. Each one contains the position field, whose value is an embedded document. 
+//After you add the documents, you can view them on the Documents tab of the main C
+
+
+db.workers.find()
+// example delete record whoose name is shivakumar and position.dept=IT INVOLVES NESTED DOCUEMENTS
+
+db.workers.deleteOne({ "name": "Shivakumar", "position.dept": "IT" });
+db.workers.find()
+// example delete record whoose position.title is Developer and position.yrs_exp IS BELOW 10 YRS
+db.workers.deleteMany({"position.title": "Developer"}, {"position.yrs_exp": { $lt: 10 }});
+db.workers.find()
+// EXAMPLE OF DELETEMANY WITH ALL OPERATOR
+db.workers.deleteMany({ "position.dept": "R&D", "position.skills": { $all: [ "Haskell", "Fortran","Smalltalk","COBOL"] }});
+db.workers.find()
+
+
+
+
+

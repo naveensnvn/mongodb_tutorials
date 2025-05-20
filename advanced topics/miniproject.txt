@@ -1,0 +1,488 @@
+
+db.StudentsDetails2.drop()
+
+
+
+db.StudentsDetails2.insertMany([
+    {  
+        "_id" : 1,
+            "std_name" : "Mukesh",  
+            "Gender" : "Male",  
+            "class" : "VI",  
+            "age" : 11,  
+            "grd_point" : 33  
+    },  
+    {  
+        "_id" : 2,
+            "std_name" : "Dechamma",  
+            "Gender" : "Female",  
+            "class" : "VI",  
+            "age" : 13,  
+            "grd_point" : 30  
+    },  
+    {  
+        "_id" : 3,    
+
+
+            "std_name" : "Akash",
+            "Gender" : "Male",  
+            "class" : "V",  
+            "age" : 14,  
+            "grd_point" : 35.1257  
+    },  
+    { 
+        "_id" : 4, 
+            "std_name" : "Geetha",  
+            "Gender" : "Female",  
+            "class" : "X",  
+            "age" : 17,  
+            "grd_point" : 36.2514  
+    },  
+    {  
+
+        "_id" : 5,
+            "std_name" : "Bhomika",  
+            "Gender" : "Female",  
+            "class" : "X",  
+            "age" : 19,  
+            "grd_point" : 35.5201  
+    },
+   {  
+    "_id" : 6,  
+    "std_name" : "Nitin",  
+            "Gender" : "Male",  
+            "class" : "V",  
+            "age" : 16,  
+            "grd_point" : 35.5201  
+    }  
+] )
+
+
+//----------------------------------------------------------------------------------
+//mongodb Mongodb queries
+
+db.StudentsDetails2.find()
+
+//#returns no of records 
+db.StudentsDetails2.find().count() //yes
+//fetches 1st two records 
+db.StudentsDetails2.find().limit(1) //yes
+
+//skips first record and displays seond record
+db.StudentsDetails2.find().skip(1) //yes
+
+// sorting examples 
+// sort based on std_name i.e student name ie ascending order
+db.StudentsDetails2.find().sort({std_name:1})  //yes
+
+// how to rename field in document
+db.StudentsDetails2.updateMany( { }, { $rename: { "Gender": "Gender" } } )   //yes
+
+// sort based on id 
+db.StudentsDetails2.find({}, {_id:1,std_name:1,Gender:1,grd_point:1}).sort({sortOrder:-1}) //yes
+
+// sort based on gender--ascending order
+db.StudentsDetails2.find({}, {_id:0,std_name:1,Gender:1,grd_point:1}).sort({Gender:1})
+
+// sort based on gender--descending order
+db.StudentsDetails2.find({}, {_id:0,std_name:1,Gender:1,grd_point:1}).sort({Gender:-1})
+
+// sort based on age--ascending order
+db.StudentsDetails2.find({}, {_id:0,std_name:1,Gender:1,grd_point:1,age:1}).sort({age:1})
+
+// sort based on age--descending
+db.StudentsDetails2.find({}, {_id:0,std_name:1,Gender:1,grd_point:1,age:1}).sort({age:-1})
+
+// sort based on age--grd_point
+db.StudentsDetails2.find({}, {_id:0,std_name:1,Gender:1,grd_point:1,age:1}).sort({grd_point:1})
+
+// sort based on age--std_name
+db.StudentsDetails2.find({}, {_id:0,std_name:1,Gender:1,grd_point:1,age:1}).sort({std_name:-1})
+
+
+db.StudentsDetails2.find({}, {_id:0}).sort({sortOrder:1})
+
+// sort based on student name
+db.StudentsDetails2.find({}, {_id:1,std_name:1,Gender:1,class:1}).sort({std_name:1})
+
+// sort based on grd_point
+db.StudentsDetails2.find({},{grd_point:1,_id:0}).sort({"grd_point":-1})
+
+// dispplay 1st two records
+db.StudentsDetails2.find({},{_id:0}).sort({"std_name":1,"Gender":1,age:1}).limit(2)
+
+
+// demonstarte limit along with count
+db.StudentsDetails2.find({},{_id:0}).sort({"std_name":1,"Gender":1,age:1}).limit(2).count()
+
+// demonstarte skip along with count
+db.StudentsDetails2.find({},{_id:0}).sort({"std_name":1,"Gender":1,age:1}).skip(2).count()
+
+
+
+// use of IN Operator in monodb along woth sort base
+// fetch records of Akash,Geetha.Bhomika using in operator and sort based on grd_point
+db.StudentsDetails2.find({"std_name":{"$in": ["Akash", "Geetha", "Bhomika"]}}).sort({ grd_point:1 })
+//Nitin,Dechamma
+
+// fetch records of  nitin,Dechamma,Geetha and sort based on grd_point desc
+db.StudentsDetails2.find({"std_name":{"$in": ["Nitin", "Dechamma", "Geetha"]}}).sort({ grd_point:-1 })
+
+// fetch records of  Bhomika,Dechamma,Dechamma and sort based on age desc
+db.StudentsDetails2.find({"std_name":{"$in": ["Bhomika", "mukesh", "Dechamma"]}}).sort({ age:-1 })
+
+// fetch records of  Bhomika,Dechamma,Dechamma and sort based on age asc
+db.StudentsDetails2.find({"std_name":{"$in": ["Dechamma", "Nitin", "Bhomika"]}}).sort({ age:1 })
+
+//return no of female gender
+db.StudentsDetails2.find({"Gender" : "Female"}).count()
+
+//return no of female gender
+db.StudentsDetails2.find({"Gender" : "Male"}).count()
+
+//-----------------------------------------------------------
+
+//and operator 
+//demo and operator displays record whoose gender is female and  are in X STD --2 conditions --USE ADD CONDITION
+db.StudentsDetails2.find({$and: [{"Gender" : "Female"}, {"class" : "X"}]})
+
+// displays count, how many female students are there in X std  ,USE ADD CONDITION
+db.StudentsDetails2.find({$and: [{"Gender" : "Female"}, {"class" : "X"}]}).count()
+
+
+//and operator displays record whoose gender is Male and  are in X STD,USE ADD CONDITION
+db.StudentsDetails2.find({$and: [{"Gender" : "Male"}, {"class" : "V"}]})
+
+// displays count, how many male  students are there in V std,USE ADD CONDITION
+db.StudentsDetails2.find({$and: [{"Gender" : "Male"}, {"class" : "V"}]}).count() 
+
+// query to find whoose gender is in  males,grd_point above 19 and are on class X,USE ADD CONDITION
+db.StudentsDetails2.find({$and: [{"Gender" : "Female"}, {"grd_point" : { $gte: 19 }}, {"class" : "X"}]})  
+
+
+// displays students details whoose gender is female and grade point greater than or equal to 36USE ADD CONDITION
+db.StudentsDetails2.find({$and:[{"Gender":"Female"},{"grd_point":{$gte:36}}]})
+
+// displays students details whose grd_point between 30 and 35,USE ADD CONDITION
+db.StudentsDetails2.find({$and:[{"grd_point":{$lte:35}},{"grd_point":{$gte:30}}]})
+
+// displays students details whose age  between 20 and 128
+db.StudentsDetails2.find({$and:[{"age":{$lte:20}},{"age":{$gte:18}}]})
+
+//-------------------------------------------------------------------
+// OR OPERATOR
+// QUERY TO FIND RECORDS WHOOSE GENDER IS FEMAL OR AGE IS >=20,USE OR OPERATOR
+db.StudentsDetails2.find({$or:[{"Gender":"Female"},{"age":{$gte:20 }}]})
+
+// QUERY TO FIND RECORDS WHOOSE grd_point IS >=36,OR WHOOSE Gender IS Male,use or operator
+
+db.StudentsDetails2.find({$or:[{"grd_point":{$gte:36 }},{"Gender":"Male"}]})
+
+// DEMO OF not operator ==not of age?15
+db.StudentsDetails2.find({age: {$not: {$gte: 15}}})
+
+// DEMO OF not operator ie gender not equal to Female
+db.StudentsDetails2.find({"Gender":{$not:{$eq:"Female"}}})
+
+
+// DEMO OF not operator nor
+db.StudentsDetails2.find({$nor:[{"Gender":"Female"},{"grd_point":{$lte:30}}]})
+ 
+// demo of not operator along with in operator --age not in 16,11
+db.StudentsDetails2.find({age: {$not: {$in: [16, 11]}}})
+
+// demo of not operator along with in operator --age not in 11
+db.StudentsDetails2.find({"age" : {$not: {$eq : 11}}}).pretty()
+// demo of not operator along with lt  operator --age 29
+db.StudentsDetails2.find({"grd_point" : {$not: {$lt : 29}}}).
+//----------------------------------------------------------------------------------
+
+//comparison operators
+// FETCHES DETAILS WHOOSE AGE IS GREATER THAN 18
+db.StudentsDetails2.find({age : {$gt : 18}})
+
+//display no of students whoose age >18
+db.StudentsDetails2.find({age : {$gt : 18}}).count()
+
+//display students  details whoose grd_point >30
+db.StudentsDetails2.find({grd_point : {$gte : 36}})
+
+//display students  details whoose age  is less than 20
+db.StdentsDetails2.find({age : {$lt : 20}})
+
+//display no of students whoose age <20
+db.StudentsDetails2.find({age : {$lt : 20}}).count()
+
+//display students  details whoose grd_point  is less than 35
+db.StudentsDetails2.find({grd_point : {$lte : 35}})
+
+db.StudentsDetails2.find({grd_point : {$lte : 35}}).count()
+
+//without using and operator display students whoose age is less tha 24 and greater than 17
+db.StudentsDetails2.find({age : {$lt :24, $gt : 17}})
+
+//display students details whoose age not equal to 30
+db.StudentsDetails2.find({"age": { $ne: 19}})
+
+//without using and operator display students whoose grd_point is less tha 35 and greater than 30
+db.StudentsDetails2.find({grd_point : {$lt :35, $gt : 30}})
+
+//without using and operator, display no of student details whoose age is less than 35 and greater than 30
+
+db.StudentsDetails2.find({grd_point : {$lt :35, $gt : 30}}).count()
+
+//without using and operator, display student details whoose age is less than 35 and greater than 30
+
+db.StudentsDetails2.find({age : {$lt :35, $gt : 30}})
+
+// use of nin The $nin stands for "not in." As the name implies,
+// it is used to find none of the values specified in an array.
+//query to find student details age not in [11,13,19,20]
+db.StudentsDetails2.find({"age": { $nin: [11,13,19,20]}})
+//query to find student details age not in [11,13[]
+db.StudentsDetails2.find({ age: {$in: [11, 13]}}, {std_name: 1, age: 1,class:1})
+
+
+//example--2
+db.createCollection("StudentsDetails4")
+db.student_details.drop()
+db.student_details.insertMany 
+([
+{  
+          "_id ": 1 ,
+           "name" : "Anand Mishra",  
+           "Course" : "Btech",  
+           "batch_year" : 2018,  
+           "dob" : ISODate("2008-12-04"),
+           "language" : ["c++", "java", "python"],  
+           "personal_details" :   
+                     {  
+                      "Father_name" : "Deepak Mishra",  
+                      "phone_no" : 8895321456,  
+                      "age" : 23,  
+                      "gender" : "Male",  
+                      "City" : "Lucknow",  
+                     }              
+}  
+,
+{  
+           "_id" : 2,  
+           "name" : "Zoya Akram",  
+           "Course" : "BCA",  
+           "batch_year" : 2020,  
+           "dob" : ISODate("2002-11-14"),
+           "language" : ["C#", "JavaScript"],  
+           "personal_details" :   
+                     {  
+                      "Father_name" : "Ahmed Javed",  
+                      "phone_no" : 9874563698,  
+                      "age" : 20,  
+                      "gender" : "Female",  
+                      "City" : "Hyderabad",  
+                     }  
+}  
+,
+{  
+           "_id" : 3,  
+           "name" : "Mahadevaswamy",  
+           "Course" : "MCA",  
+           "batch_year" : 2019,  
+           "dob" : ISODate("2004-05-24"),
+           "language" : ["C#", "java", "PHP"],  
+           "personal_details" :   
+                     {  
+                      "Father_name" : "Nanjudaswamy",  
+                      "phone_no" : 7845123698,  
+                      "age" : 24,  
+                      "gender" : "Male",  
+                      "City" : "Bangalore",  
+                     }            
+}  
+
+
+,
+{  
+           "_id" : 4,  
+           "name" : "Priya Sawant",  
+           "Course" : "MTech",  
+           "batch_year" : 2017,  
+           "dob" : ISODate("2006-07-30"),
+           "language" : ["c", "PHP"],  
+           "personal_details" :   
+                     {  
+                      "Father_name" : "Ashok Sawant",  
+                      "phone_no" : 9997845123,  
+                      "age" : 25,  
+                      "gender" : "Female",  
+                      "City" : "Mumbai",  
+                     }             
+}  
+, 
+{  
+           "_id" : 5,  
+           "name" : "Ramya Gowda",  
+           "Course" : "Btech",  
+           "batch_year" : 2020,  
+           "dob" : ISODate("2008-08-16"),
+           "language" : ["HTML", "CSS", "PHP"],  
+           "personal_details" :   
+                     {  
+                      "Father_name" : "Arjun Gowda",  
+                      "phone_no" : 6312547896,  
+                      "age" : 22,  
+                      "gender" : "Female",  
+                      "City" : "Bangalore",  
+                     }             
+}  
+])
+
+//start
+///#mongodb Mongodb queries
+db.StudentsDetails4.find()
+//EXAMPLE OF NESTED DOCUMENTS
+// simple find with nested documents  
+db.student_details.find({},{_id:0,"name":1,"personal_details.phone_no": 1 })
+
+// simple fetch invoving nested documents and sort name asc
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+"personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 }).sort({name:1})
+
+// simple fetch invoving nested documents and sort name desc
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+"personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 }).sort({name:-1})
+
+// simple fetch invoving nested documents and sort Course acs
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+ "personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 }).sort({Course:1})
+ 
+// simple fetch invoving nested documents and sort dob  acs
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+"personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 }).sort({dob:1})
+
+// simple fetch invoving nested documents and sort dob  desc
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+"personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 }).sort({dob:-1})
+
+// simple fetch invoving nested documents and sort city  desc
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+    "personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 ,"personal_details.Father_name": 1})
+// simple fetch invoving nested documents and use limit
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+ "personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 ,"personal_details.Father_name": 1})
+.limit(2)
+
+// use of count
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+"personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 ,"personal_details.Father_name": 1})
+.skip(2).count()
+
+
+//use of explain
+db.student_details.find({},{_id:0,name:1,Course:1,batch_year:1,dob:1,language:1,"personal_details.phone_no": 1,
+"personal_details.age": 1, "personal_details.gender": 1,"personal_details.City": 1 }).explain()
+
+// use of in operator and sprt by dob asc
+db.student_details.find({"name":{"$in": ["Mahadevaswamy", "Zoya Akram", "Priya Sawant"]}}).sort({ dob:1})
+// use of in operator and sort by age desc
+db.student_details.find({"name":{"$nin": ["Mahadevaswamy", "Anand Mishra", "Priya Sawant"]}}).sort({ "personal_details.age":-1 })
+
+// use of in operator and sprt by sort batch_year desc
+
+db.student_details.find({"personal_details.Father_name":{"$in": ["Arjun Gowda", "Nanjudaswamy", "Ahmed Javed"]}}).sort({ batch_year:-1 })
+
+//-----------------------------------------------------------------------------------------------------------------------
+//logical operators,
+// use in operator and sort by batch_year desc
+db.student_details.find({"personal_details.Father_name":{"$in": ["Arjun Gowda", "Nanjudaswamy", "Ahmed Javed"]}}).sort({ batch_year:-1 })
+
+//use of and operation with nested documents
+db.student_details.find({$and: [{"personal_details.Father_name" : "Ashok Sawant"}, {"name" : "Priya Sawant"}]})
+
+//use of and operation with nested documents
+db.student_details.find({$and: [{"Course" : "Btech"}, {"batch_year" : { $gte: 2010 }}, {"personal_details.City" : "Bangalore"}]}) 
+// demo of use of not eq to female
+db.student_details.find({"personal_details.gender":{$not:{$eq:"Female"}}})
+//demo of nor 
+db.StudentsDetails4.find({$nor:[{"personal_details.gender":"Male"},{"age":{$lte:30}}]})
+
+// demo of not and in
+db.student_details.find({age: {$not: {$in: [16, 11]}}})
+// demo of not and in
+
+db.student_details.find({age:{$not:{$in:[16,11]}}})
+// demo of not and eq age==11
+
+db.student_details.find({"age" : {$not: {$eq : 11}}})
+
+// demo of not and eq age==11
+
+db.student_details.find({"age" : {$not: {$lt : 29}}})
+//use of or
+db.student_details.find({$or: [{"personal.age": 25}, {"personal_details.City": "Mumbai"}]})
+//use of or
+
+db.student_details.find({$or: [{language: {$nin: ["c++", "java", "python"]}}]}).pretty() 
+//use of or
+//use of or
+
+db.student_details.find({$or: [{language: {$eq: ["c++", "java", "python"]}}]})
+//use of and
+
+db.student_details.find({$and: [{language: {$in: ["c++", "java", "python"]}}]})
+//use of nor
+
+db.student_details.find({$nor: [{Course: "Btech"}]}).pretty()
+//use of nor and in
+db.student_details.find({$nor: [{language: {$in: ["Java", "C#"]}}]}).pretty() 
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+//logical operators,
+//and opeation
+db.student_details.find({$and: [{"personal_details.Father_name" : "Arjun Gowda"}, {"name" : "Ramya Gowda"}]})
+
+//and opeation
+
+db.student_details.find({$and: [{"Course" : "MTech"}, {"batch_year" : { $gte: 2010 }}, {"personal_details.City" : "Mumbai"}]})  
+// logical operators 
+//or opeation
+db.student_details.find({$or: [{Course : "MTech"}, {batch_year : 2017}]})
+//or opeation
+db.student_details.find({$or: [{"personal_details.age": 24}, {"personal_details.City": "Bangalore"}]})
+
+//or opeation  and  in
+db.student_details.find({$or: [{language: {$in: ["c++", "java", "python"]}}]})
+
+//r opeation and and  in
+
+db.student_details.find({$and: [{language: {$in: ["c++", "java", "python"]}}]})
+//nor example
+
+db.student_details.find({$nor: [{Course: "MCA"}]})
+//nor example
+
+db.student_details.find({$nor: [{Course: "Btech"}]})
+//nor example
+
+db.student_details.find({$nor: [{Course: "Btech"}, {batch_year: "2017"}]})
+//nor example and in operatpr
+ db.student_details.find({$nor: [{language: {$in: ["Java", "C#"]}}]})
+
+ //COMPARSION OPERATORS
+//$gt age>17
+//$GT match on a string
+db.StudentsDetails4.find({"personal_details.age":{$gt:17}})
+//$gt age>27
+//$gte 
+db.StudentsDetails4.find({"personal_details.age":{$gte:25}})
+//$in:
+db.StudentsDetails4.find({"personal_details.age":{$in:[25,22]}})
+//$lt
+db.StudentsDetails4.find({"personal_details.age":{$lt:25}})
+//$lte
+db.StudentsDetails4.find({"personal_details.age":{$lte:20}})
+
+db.StudentsDetails4.find({"personal_details.age":{$nin:[20,30]}})
+
+ //-------------------------------------------------------------------------------------------
+

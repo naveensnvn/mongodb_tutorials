@@ -1,0 +1,56 @@
+
+//$pop
+//The $pop operator removes the first or last element of an array. 
+// Pass $pop a value of -1 to remove the first element of an array and 1 to remove the last element in an array.
+db.students_scores.drop()
+
+db.students_scores.insertMany([ 
+    {_id: 1, name:"Harish", scores: [ 8, 9, 10 ]},
+     {_id: 2, name:"Abisek", scores: [ 8, 9, 10 ]},
+    {_id: 3,name:"Rajiv", scores: [ 8, 9, 10 ]},
+    {_id: 4,name:"Rakesh", scores: [ 8, 9, 10 ]}
+])
+//remove 1st element in array scores in document  whoose name='harish'
+db.students_scores.updateOne( { name:"Harish"}, { $pop: { scores: -1 } } )
+
+db.students_scores.find({ name:"Harish"})
+
+//Remove the Last Item of an Array
+db.students_scores.updateOne( { name:"Rakesh"}, { $pop: { scores: 1 } } )
+
+db.students_scores.find({ name:"Rakesh"})
+
+//The following example removes the last element, 10, 
+// from the scores array by specifying 1 in the $pop expression:
+db.products.insertMany([ 
+ { "_id" : 1, "product" : "Bat", "sizes" : [ "S", "M", "L", "XL" ] },
+{ "_id" : 2, "product" : "Hat", "sizes" : [ "S", "M", "L", "XL" ] },
+{ "_id" : 3, "product" : "Cap", "sizes" : [ "S", "M", "L" ] },
+{ "_id" : 4, "product" : "Shirts", "sizes" : [ "S", "M","XL","XXL" ] }
+])
+//Remove the First Element in sizes ARRAY  whoose product='Shirts'
+db.products.updateOne( 
+  { "product" : "Shirts" }, 
+  { $pop: { sizes: -1 } } 
+)
+
+db.products.find( {product: "Shirts"})
+
+//Remove the Last Element
+//QUERY remove the last element from the sizes ARRAY whose _id=2
+db.products.updateOne( 
+  { _id: 2 }, 
+  { $pop: { sizes: 1 } } 
+)
+
+db.products.find({_id:2})
+//Update All Documents
+
+//query to remove last element in sizes  array that uses the updateMany() metho
+db.products.updateMany( 
+  { }, 
+  { $pop: { sizes: 1 } } 
+)
+
+db.products.find()
+

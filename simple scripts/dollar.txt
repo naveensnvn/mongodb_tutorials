@@ -1,0 +1,198 @@
+
+//$[]
+//The all positional operator $[] indicates that the update operator should modify all elements in the specified array field.
+
+db.student4.drop()
+//Create Collection
+db.student4.insertMany([
+{ 
+    _id:1,
+    name: "Mithun",
+    courses: [ "python", "java", "php" ],
+    grades: [ 75, 80, 90 ]
+},
+{ 
+   _id:2,
+    name: "Rajesh",
+    courses: [ "calculus", "data structure", "python" ],
+    grades: [ 95, 80, 75 ]
+},
+{ 
+   _id:3,
+    name: "varsha",
+    courses: [ "web technologies", "perl", "python" ],
+    grades: [ 91, 80, 100 ]
+},
+{ 
+    _id:4,
+    name: "Niktha",
+    courses: [ "java", "database", "php" ],
+    grades: [ 70, 80, 90]
+}
+])
+// Use $set Operator with $[] to Change All Array Elements
+//To change all array elements in a document to a certain value use the $set operator
+//  with $[]. The $set operator is used to set the value of a field in a document. 
+// When used in conjunction with the $[] operator, it can set the value of all elements in an array field that match the query condition.
+//To change all array elements in a document to a certain value use the $set operator with $[]. 
+// The $set operator is used to set the value of a field in a document.
+//  When used in conjunction with the $[] operator, it can set the value of all elements in an
+//  array field that match the query condition.
+// Using $set and $[]operator
+// to change array elements
+
+// query to update all values present in array grades to 100 using set and $[] whoose name='Mithun'
+db.student4.updateOne(
+{  name: "Mithun", },
+{ "$set": { "grades.$[]": 100 } }
+)
+db.student4.find({ name: "Mithun",})
+
+//2. Changing All Array Elements of Multiple Documents in MongoDB
+//Likewise, if we want to change all the array elements of multiple documents then we again 
+// use the $set operator with the $[] operator. In this case, we have used the update method to 
+// update all documents in the student collection. We use an empty query object to match all documents, and
+//  then use the $set operator to set all the elements in the grades array to a value 200 using the $[] positional operator.
+
+//Using $set and $[]operator 
+// to change all array elements of multiple documents to 200
+db.student4.updateMany({}, {$set: {"grades.$[]": 200}}, {multi: true})
+
+db.student4.find({})
+
+db.grades_score.drop()
+
+db.grades_score.insertMany([ 
+ { "_id" : 1, "grades" : [ 85, 82, 80 ] },
+{ "_id" : 2, "grades" : [ 88, 90, 92 ] },
+{ "_id" : 3, "grades" : [ 85, 100, 90 ] }
+])
+// increement grades marks by 10 for all students
+db.grades_score.update(
+    { },
+    { $inc: { "grades.$[]": 10 } },
+    { multi: true }
+ )
+ db.grades_score.find()
+
+ // query checks each value in scrore array if score!=100 then increment
+ // each score value by 10
+ db.grades_score.updateMany(
+   { "grades" : { $ne: 100 } },
+   { $inc: { "grades.$[]": 10 } },
+)
+db.grades_score.find()
+
+//nested docuemnst //example 3
+db.gradesscore.drop()
+db.gradesscore.insertMany( [
+    {
+       "_id" : 1,
+       "grades" : [
+          { "grade" : 80, "mean" : 75, "std" : 8 },
+          { "grade" : 100, "mean" : 90, "std" : 6 },
+          { "grade" : 85, "mean" : 85, "std" : 8 }
+       ]
+    },
+    {
+       "_id" : 2,
+       "grades" : [
+          { "grade" : 90, "mean" : 75, "std" : 8 },
+          { "grade" : 100, "mean" : 90, "std" : 5 },
+          { "grade" : 85, "mean" : 85, "std" : 6 }
+       ]
+    }
+ ] )
+// query to decrement std by -2 in whole document gradesscore
+db.gradesscore.update(
+    { },
+    { $inc: { "grades.$[].std" : -2 } },
+    { multi: true }
+ )
+ db.gradesscore.find()
+
+
+db.student4.drop()
+//Create Collection
+
+https://sparkbyexamples.com/mongodb/mongodb-update-multiple-array-elements/
+
+//Collection Created
+db.shop.insertMany([
+      {
+          "_id": 1,
+          "product" : "Laptop" ,
+          "price": [900, 500, 700],
+          "color": ["Black", "White", "Grey"],
+          "brand": [{"Apple": "Available", "Asus": "Not-Available"}]          
+      },
+       {
+            "_id": 2,
+          "product" : "Mobile" ,
+          "price": [200, 600, 500],
+          "color": ["White", "Silver", "Black"],
+           "brand": [{"Apple": "Available", "Redmi": "Available"}]
+       },
+       {
+          "_id": 3,
+          "product" : "Airpods" ,
+          "price": [100, 250, 350],
+          "color": ["Black", "White"],
+           "brand": [{"Apple": "Available", "Samsung": "Not-Available", "Redmi":"Available"}]
+       }
+  ])
+
+//#$[] operator usage
+//Updating Multiple Array Elements in all Documents based on 
+// the Array Filter
+//#$[] operator usage
+//query  update 
+db.shop.update(
+   { "product" : "Mobile" },
+   { $set: {
+       "brand.$[].Redmi": "Limited Range",
+       "brand.$[].Apple": "Not-Available"
+     }
+   }
+)
+db.shop.find()
+//3. Updating Multiple Array Elements in 
+// all Documents based on the Array Filter
+//$[] operator usage
+db.shop.updateMany(
+    {}, 
+    { $set: {"color.$[element]":"Maroon"}},
+    { arrayFilters: [{ element: "White" }]})
+  
+//Updating Multiple Specific Array Elements using the $eleMatch operator
+#$eleMatch Operator
+db.sports.insert([{
+  "_id": 1,
+  "sports": "Football",
+  "teams": [
+    { "name": "Wolf", "color": "Brown", "score": 6 },
+    { "name": "Tigers", "color": "Orange", "score": 3 },
+    { "name": "Hybirds", "color": "Green", "score": 9 }
+  ]
+}])
+//#Using $set and arrayFilters option
+db.sports.updateMany(
+  { _id: 1, teams: { $elemMatch: { $or: [{ name: "Wolf" }, { name: "Tigers" }] } } },
+  { $set: { "teams.$[elem].score": 10 } },
+  { arrayFilters: [{ "elem.name": { $in: ["Wolf", "Tigers"] } }] }
+)
+
+//$[]
+//The all positional operator $[] indicates that the update operator should modify all elements in the specified array field.
+
+
+
+
+
+
+
+
+
+
+
+

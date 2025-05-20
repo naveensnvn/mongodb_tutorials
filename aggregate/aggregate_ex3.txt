@@ -1,0 +1,820 @@
+
+db.employee_details.drop()
+
+db.employee_details.insertMany(
+  [
+    {
+      _id: 1,
+      name: 'Kavana',
+      age: 25,
+      email: 'charlie@example.com',
+      city: 'Chicago',
+      Department:"Finance",
+      Gender:"Female",
+      salary:90000,
+      JoiningDate: new ISODate("2020-05-18")
+    },
+    {
+      _id:2,
+      name: 'Laksmi',
+      age: 30,
+      email: 'Laksmi@example.com',
+      city: 'Chicago',
+      Department:"HR Dept",
+      Gender:"Female",
+      salary:80000,
+      JoiningDate: new ISODate("2021-06-25")
+    },
+    {
+      _id: 3,
+      name: 'Tanishq',
+      age: 35,
+      email: 'Tanishq@example.com',
+      city: 'Los Angeles',
+      Department:"Development",
+      Gender:"Female",
+      salary:70000,
+      JoiningDate: new ISODate("2022-06-25")
+    },
+      {
+        _id: 4,
+        name: 'Varsha',
+        age: 35,
+        email: 'jane@example.com',
+        city: 'Boston',
+        Department:"Development",
+        Gender:"Female",
+        salary:55000,
+        JoiningDate: new ISODate("2017-11-25")
+      }
+      ,
+      {
+        _id: 5,
+        name: 'Rajesh',
+        age: 25,
+        email: 'Rajesh@example.com',
+        city: 'Michigan',
+        Department:"Finance",
+        Gender:"Male",
+        salary:68000,
+        JoiningDate: new ISODate("2015-11-25")
+    }
+    ,
+    {
+        _id: 6,
+        name: 'Akash',
+        age: 25,
+        email: 'Akash@example.com',
+        city: 'Michigan',
+        Department:"Finance",
+        Gender:"Male",
+        salary:40000,
+        JoiningDate: new ISODate("2020-11-25")
+    }
+    ,
+    {
+        _id: 7,
+        name: 'Nikitha',
+        age: 25,
+        email: 'Nikitha@example.com',
+        city: 'Los Angeles',
+        Department:"HR Dept",
+        Gender:"Male",
+        salary:45000,
+        JoiningDate: new ISODate("2018-04-25")
+    }
+    ,     {
+        _id: 8,
+        name: 'Mohammed Labeeb',
+        age: 25,
+        email: 'Labeeb@example.com',
+        city: 'Los Angeles',
+        Department:"Development",
+        Gender:"Male",
+        salary:35000,
+        JoiningDate: new ISODate("2012-04-25")
+    }
+    ,
+    {
+        _id: 9,
+        name: 'Ruthvi',
+        age: 25,
+        email: 'Ruthvi@example.com',
+        city: 'Chicago',
+        Department:"Finance",
+        Gender:"Female",
+        salary:95000,
+        JoiningDate: new ISODate("2016-05-25")
+    }
+    ,
+    {
+        _id: 10,
+        name: 'Ananya',
+        age: 25,
+        email: 'Ananya@example.com',
+        city: 'Boston',
+        Department:"HR Dept",
+        Gender:"Female",
+        salary:30000,
+        JoiningDate: new ISODate("2015-01-25")
+    }
+    ,   {
+        _id: 11,
+        name: 'Punya Keethri',
+        age: 25,
+        email: 'Punya@example.com',
+        city: 'Los Angeles',
+        Department:"Development",
+        Gender:"Female",
+        salary:25000,
+        JoiningDate: new ISODate("2013-01-25")
+    }
+    ,   
+    {
+        _id: 12,
+        name: 'Deepika',
+        age: 25,
+        email: 'Deepika@example.com',
+        city: 'Boston',
+        Department:"Development",
+        Gender:"Female",
+        salary:65000,
+        JoiningDate: new ISODate("2014-07-25")
+    }
+    ,   
+    {
+        _id: 13,
+        name: 'Shifa Banu',
+        age: 25,
+        email: 'Shifa@example.com',
+        city: 'Michigan',
+        Department:"Finance",
+        Gender:"Female",
+        salary:84000,
+        JoiningDate: new ISODate("2019-08-25")
+    }
+    ,   
+    {
+        _id: 14,
+        name: 'Mohammed Umar',
+        age: 25,
+        email: 'Umar@example.com',
+        city: 'Michigan',
+        Department:"Finance",
+        Gender:"Male",
+        salary:48000,
+        JoiningDate: new ISODate("2021-07-19")
+    }
+    
+  ]
+)
+
+db.employee_details.aggregate([
+
+    { $group:{ _id:'',number_of_employees:{$sum:1}}}
+])
+//or
+db.employee_details.find().count()
+
+//query to find out how many female employees are present in document using 
+//aggregate group
+db.employee_details.aggregate([ 
+    {$match:{ Gender: 'Female'}},
+    { $group:{ _id:'', number_of_female_Employees: { $sum:1 } } 
+}])
+//or
+db.employee_details.find({Gender: 'Female'}).count()
+
+
+//query to find out how many Male employees are present in document using 
+//aggregate group
+db.employee_details.aggregate([ 
+    {$match:{ Gender: 'Male'}},
+    { $group:{ _id:'', number_of_Male_Employees: { $sum:1 } } 
+}])
+//or
+db.employee_details4.find({Gender: 'Male'}).count()
+
+
+
+//query to find out how many employees are present in each Department using 
+//aggregate, group
+db.employee_details.aggregate([ 
+    { $group:{ _id:'$Department', totalEmployees_in_EachDep: { $sum:1 } } 
+}])
+
+
+
+//query to find out how many female employees are present in each Department using 
+//aggregate group
+db.employee_details.aggregate([ 
+    {$match:{ Gender: 'Female'}},
+    { $group:{ _id:'$Department', number_of_female_Employees_each_dept: { $sum:1 } } 
+}])
+
+// query to found out how  number of  male employees are earning salary>=50000
+db.employee_details.aggregate([ 
+    {$match:{ Gender: 'Male',salary:{$gte:40000}}},
+    { $group:{ _id:'', totalEmployees: { $sum:1 } } }
+])
+
+
+
+//or
+// query to found out how many many Female employees are earning salary>=50000
+db.employee_details.aggregate([ 
+    {$match:{ Gender: 'Female',salary:{$gte:70000}}},
+    { $group:{ _id:'', totalEmployees: { $sum:1 } } }
+])
+
+// query to found out how many many Female employees are earning salary>=70000 and working in Department=Finance
+db.employee_details.aggregate([ 
+    {$match:{ Gender: 'Female',salary:{$gte:70000},Department:'Finance'}},
+    { $group:{ _id:'', totalEmployees: { $sum:1 } } }
+])
+
+//fetch count no of employees working in Finance using aggregate,match,group
+db.employee_details.aggregate([
+        {$match:{Department:'Finance'}},
+      {$group:{ _id:null, no_of_employes_working_in_finance:{$sum:1}}
+     }
+  ])
+
+//fetch count no of employees working in Finance using aggregate,match,group
+db.employee_details.aggregate([
+    {$match:{Department:'Finance',Gender:'Male'}},
+  {$group:{ _id:null, no_of_Male_employes_working_in_finance:{$sum:1}}
+ }
+])
+
+
+ // $first & $last
+  //It is used to get the first and last values in each group of documents by Department
+  db.employee_details.aggregate([
+    {$group:{_id:'$Department',Name:{ $first:'$name'}
+    }},
+
+  ])
+
+  db.employee_details.aggregate([
+    {$group:{_id:'$Department',Name:{ $last:'$name'}
+    }},
+  ])
+
+// use of concate in aggregate
+  db.employee_details.aggregate([ 
+     {$project: {"name": 1, _id: 0, Department: 
+     {$concat: ["My department is: ", "$Department"]}}}])
+
+
+// fetch details whoose Department=Finance using aggregate and dem how to use 
+//project and sort salary desc
+  db.employee_details.aggregate([
+    
+    {$match:{ Department:'Finance' }},
+    {$project: {"name": 1, age: 1, Department: 1,Gender:1,salary:1}},
+    {$sort:{salary:-1}}
+ ])
+
+// fetch details whoose Department=Finance  and  Gender:"Male" using aggregate and dem how to use 
+//project and sort salary asc
+ db.employee_details.aggregate([
+    
+    {$match:{ Department:'Finance' ,Gender:"Male"}},
+    {$project: {"name": 1, age: 1, Department: 1,Gender:1,salary:1}},
+    {$sort:{salary:1}}
+ ])
+
+// query demo of use project to display name,age,city,salary  with no match and group
+db.employee_details.aggregate([
+    { $project: { _id: 0, name: 1, age: 1,city:1, salary:1} }
+  ])
+
+// display details of document by using sorting salary desc
+  db.employee_details.aggregate([
+    { $sort: { salary: -1 } }
+  ])
+
+// Query to demo how to use sort and limit in aggregate
+  db.employee_details.aggregate([
+    { $sort: { salary: -1 } },
+    { $limit: 2 }
+  ])
+
+
+// use of limit in aggregate-- display 1st 2 records
+db.employee_details.aggregate([
+    { $limit: 2 }
+  ])
+// average age  in collection
+  db.employee_details.aggregate([
+    {
+         $group: { _id: null,averageAge: { $avg: "$age" }}
+    }
+  ])
+
+  // Query TO fIND Maximum age of person working in each Department
+  //using aggregate,group,max
+  //employee_details4: { $push: "$$ROOT" } //fetches everything from document
+  db.employee_details.aggregate([
+    {
+         $group: { _id: "$Department",maxAge_in_each_dept: { $max: "$age" }}},
+       
+  ])
+  // Query TO fIND minimum age of person working in each Department
+  //using aggregate,group,min
+  //employee_details4: { $push: "$$ROOT" }
+  db.employee_details.aggregate([
+    {
+         $group: { _id: "$Department",minAge_in_each_dept: { $min: "$age" },}
+    }
+  ])
+// sum of TotalSalary
+  db.employee_details.aggregate([
+    {
+         $group: { _id: "$Department",TotalSalary: { $sum: "$salary" }}
+    }
+  ])
+// average salary 
+
+
+// get highest salary of female person using aggregate match and group
+db.employee_details.aggregate([
+    
+   {$match:{Gender:"Female"}},
+    {$group: { _id: null,HighestSalary: { $max: "$salary" }} }
+])
+
+// get highest salary of female person using aggregate match and group
+db.employee_details.aggregate([
+    
+   {$match:{Gender:"Male"}},
+    {$group: { _id: null,HighestSalary: { $max: "$salary" }} }
+])
+
+// get highest salary of person working in Department:'Finance, Gender:"Female"
+//using aggregate,match,group,max
+db.employee_details.aggregate([
+    
+        {$match:{ Department:'Finance' ,Gender:"Female"}},
+         {$group: { _id: null,HighestSalary: { $max: "$salary" }} }
+  ])
+
+//query to find sum of salary Department wise using aggregate,group //not working
+db.employee_details.aggregate([
+
+     {$group: { _id: '$Department',TotalSalary_Department: { $sum: "$salary"}} }
+])
+
+
+
+//query to find sum of salary whoose Department:'HR Dept' ,Gender:"Female"
+//    Department:"HR Dept",
+  db.employee_details.aggregate([
+    {$match:{ Department:'HR Dept' ,Gender:"Female"}},
+     {$group: { _id: null,TotalSalary_HrDept: { $sum: "$salary" }} }
+])
+
+
+  // query to find  total salary in Finance dept
+  db.employee_details4.aggregate([
+    { $group: { _id: "$Finance", totalSalesofFinance: { $sum: "$salary" } } }
+  ])
+  // query to find  maximum salary in Finance dept
+db.employee_details.aggregate([
+   {$match:{ Department:'Finance' ,Gender:"Female"}},
+    { $group: {_id:null,  highestsalary: { $max: "$salary" } } }
+  ])
+
+
+
+// query to find lowest salary in Finance dept
+db.employee_details.aggregate([
+      {$match:{ Department:'HR Dept' ,Gender:"Female"}},
+      {$group: { _id: null, lowestsalary: { $min: "$salary" } } }
+  ])
+
+// query to find average  salary  of Female Employee 
+  db.employee_details.aggregate([
+   {$match:{ Department:'HR Dept' ,Gender:"Female"}},
+   {$group: { _id: null, avgSalary_in_Finance: { $avg: "$salary" } } }
+])
+
+
+// query convert city to toUpper and display name,age, Department and city
+//using aggregate and project .Display name,age,Department,city(uupercase)
+  db.employee_details.aggregate([
+ {$project: {_id:0,name:1,age:1,Department:1,city: {$toUpper: "$city"}}}
+])
+// query convert to toLower
+db.employee_details.aggregate([
+    {$project: {city: {$toLower: "$city"}}}
+   ])
+
+   // query   multiply salary by 2 using aggregate,project
+db.employee_details.aggregate([
+    {$project:{name:1,newSalary:{$multiply:["$salary",2]}}}
+    ])
+
+   // query   multiply salary by 2 using aggregate,project where
+   //Department: "Development
+db.employee_details.aggregate([
+    {$match: {Department: "Development"}},
+{$project: {name: 1, newSalary: {$multiply: ["$salary", 2]}}}
+])
+
+
+//Example combining $multiply with $add:
+// mulitply salary by 1.1 then add 100 to totaol
+//totalSalary=salary*1.1
+//totalSalary=totalSalary+100
+db.employee_details.aggregate([
+    { $project: { 
+        name: 1, 
+        totalSalary: { $add: [{ $multiply: ["$salary", 1.1] }, 1000] } 
+    } }
+  ])
+  
+  // to find total salary who have joined after 2017-01-01 and  Department: "Development"
+  db.employee_details.aggregate([
+      { $match: { JoiningDate: { $gte: ISODate("2017-01-01") }, Department: "Development"}},
+      { $group: { _id: "$null", totalSalary: { $sum: "$salary" } } },
+    ])
+
+  // to find total salary departmentwise(gropup by) who have joined after 2017-01-01  and works in 
+    db.employee_details.aggregate([
+        { $match: { JoiningDate: { $gte: ISODate("2017-01-01") }}},
+        { $group: { _id: "$Department", totalSalary: { $sum: "$salary" } } },
+      ])
+
+
+  // totall salary after  between dates 2017-01-01 and 2022-01-31
+    db.employee_details.aggregate([
+      { $match: { JoiningDate: { $gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')} } },
+      { $group: { _id: "$null", totalSalary: { $sum: "$salary" } } },
+    ])
+// query to find out lowest salary between 2017-01-01 and '2022-01-31 using aggregate,match,group,min
+    db.employee_details.aggregate([
+      { $match: { JoiningDate: { $gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')} } },
+      { $group: { _id: "$null", minSalary: { $min: "$salary" } } },
+    ])
+
+// Query to find out lowest salary OF employee who  joined between 2017-01-01 and '2022-01-31 and belongs to Development Department  using aggregate,match,group,min
+db.employee_details.aggregate([
+   { $match: { JoiningDate: { $gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')}, Department: "Development"} },
+   { $group: { _id: "$null", minSalary: { $min: "$salary" } } },
+ ])
+
+// Query to find out lowest salary OF employee who  joined between 2017-01-01 and '2022-01-31 and belongs to Development Department and gender='Female' 
+//  using aggregate,match,group,min 
+db.employee_details.aggregate([
+   { $match: { JoiningDate: { $gte: ISODate("2010-01-01"),$lte:ISODate('2022-01-31')}, Department: "HR Dept",Gender:"Female"}},
+   { $group: { _id: "$null", minSalary: { $min: "$salary" } } },
+ ])
+
+  // query to number_of_employees who joined  between 2017-01-01 and '2022-01-31 using aggregate,match,group,sum
+  db.employee_details.aggregate([
+    { $match: { JoiningDate: { $gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')} } },
+    { $group: { _id: "$null", number_of_employees: { $sum: 1} } },
+  ])
+
+  // query to number_of_employees who joined  between 2017-01-01 and '2022-01-31 and working  Finance  Department using aggregate,match,group,sum
+    db.employee_details.aggregate([
+        { $match: { JoiningDate:  {$gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')},Department: "Finance"}},
+        { $group: { _id: "$null", number_of_employees: { $sum: 1} } },
+      ])
+  // query to number_of_employees who joined  between 2017-01-01 and '2022-01-31 and working in each department
+
+db.employee_details.aggregate([
+    { $match: { JoiningDate: { $gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')}} },
+    { $group: { _id: "$Department", number_of_employees_eachDepartment: { $sum: 1 } } },
+  ])
+
+// Query to find avgSalary salary in each dept wise between 2017-01-01 and  2022-01-31 using aggregate,match,group,avg
+db.employee_details.aggregate([
+    { $match: { JoiningDate: { $gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')}} },
+    { $group: { _id: "$Department", avgSalary: { $avg: "$salary" } } },
+  ])
+
+
+  
+  
+  //  { $limit: 5 }
+  //query to list details whoose salary>=60000,use project 
+  // sort salary desc and display 1st 2 records
+  db.employee_details.aggregate([
+      { $match: { salary: { $gte: 60000 } } },
+      { $project: { _id: 0, name: 1, salary: 1, age: 1,city:1 } },
+      { $sort: { salary: -1 } },
+       { $limit: 2 }
+    ])
+  
+  
+  //Example 1: Divide using $divide operator
+  //This could be used, for example, to calculate a bonus or a tax deduction.
+    //query  we use the $divide operator to divide the salary of employees in the “Development” department by 2. 
+  db.employee_details.aggregate([
+      {$match: {Department: "Development"}},
+      {$project: {name: 1, halfSalary: {$divide: ["$salary", 2]}}}
+  ])
+  
+
+// query to find out lowest salary between 2017-01-01 and '2022-01-31 using aggregate,match,group,min
+db.employee_details.aggregate([
+    { $match: { JoiningDate: { $gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')} } },
+    { $group: { _id: "$null", number_of_employees: { $sum: 1} } },
+  ])
+
+// Query to number_of_employees   joined between 2017-01-01 and '2022-01-31 and working to Development Department  using aggregate,match,group,min
+db.employee_details.aggregate([
+ { $match: { JoiningDate: { $gte: ISODate("2017-01-01"),$lte:ISODate('2022-01-31')}, Department: "HR Dept"} },
+ { $group: { _id: "$null", number_of_employees_workin_Development: { $sum: 1 } } },
+])
+
+// Query to find outnumber_of_employees who  joined between 2017-01-01 and '2022-01-31 and belongs to Development Department and gender='Female' 
+//  using aggregate,match,group,min 
+db.employee_details.aggregate([
+ { $match: { JoiningDate: { $gte: ISODate("2010-01-01"),$lte:ISODate('2022-01-31')}, Department: "HR Dept",Gender:"Female"}},
+ { $group: { _id: "$null", minSalary: { $sum: 1 } } },
+])
+
+
+
+//$group
+//the $group stage combines multiple documents with the same field, fields, or expression into a
+//  single document according to a group key. The result is one document per unique group key.
+db.sales.drop()
+db.sales.insertMany([
+    { "_id" : 1, "item" : "jackets", "price" : Decimal128("10"), "quantity" : Int32("2"), "date" : ISODate("2014-03-01T08:00:00Z") },
+    { "_id" : 2, "item" : "pants", "price" : Decimal128("20"), "quantity" : Int32("1"), "date" : ISODate("2014-03-01T09:00:00Z") },
+    { "_id" : 3, "item" : "shirts", "price" : Decimal128("5"), "quantity" : Int32( "10"), "date" : ISODate("2014-03-15T09:00:00Z") },
+    { "_id" : 4, "item" : "shirts", "price" : Decimal128("5"), "quantity" :  Int32("20") , "date" : ISODate("2014-04-04T11:21:39.736Z") },
+    { "_id" : 5, "item" : "jackets", "price" : Decimal128("10"), "quantity" : Int32("10") , "date" : ISODate("2014-04-04T21:23:13.331Z") },
+    { "_id" : 6, "item" : "pants", "price" : Decimal128("7.5"), "quantity": Int32("5" ) , "date" : ISODate("2015-06-04T05:08:13Z") },
+    { "_id" : 7, "item" : "pants", "price" : Decimal128("7.5"), "quantity": Int32("10") , "date" : ISODate("2015-09-10T08:43:00Z") },
+    { "_id" : 8, "item" : "jackets", "price" : Decimal128("10"), "quantity" : Int32("5" ) , "date" : ISODate("2016-02-06T20:20:13Z") },
+  ])
+
+
+  //query display last 5 records using aggregate
+  db.sales.aggregate
+  ([ 
+    { $limit : 5}
+  ])
+    
+  // displays no of records in table sales using aggregate
+db.sales.aggregate([ 
+{
+    $group:{_id:null,count:{$count:{ }}}
+}  
+])
+//query to find no of records based on item
+db.sales.aggregate([ 
+    {
+        $group:{_id:"$item",count:{$count:{}}}
+    }
+    ])
+
+//Group by Item Having
+//Query  aggregation operation groups documents by the item field, calculating the total sale amount per item
+
+db.sales.aggregate(
+    [
+      // First Stage
+      {$group :{_id : "$item",totalSaleAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } }}},
+      
+     ])
+
+
+//Group by Item Having
+//The query  aggregation operation groups documents by the item field, calculating the total sale amount per item
+//  and //returning only the items with total sale amount greater than or equal to 100:
+db.sales.aggregate(
+    [
+      // First Stage
+      {$group :{_id : "$item",totalSaleAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } }}},
+       // Second Stage
+       {$match: { "totalSaleAmount": { $gte: 150 } }
+}
+     ])
+
+   //query to find sum by   price  by item  and  totalSumAmount>=15
+  db.sales.aggregate
+   ([
+      // First Stage
+      {$group :{_id : "$item",totalSumAmount: { $sum:"$price" } }},
+       // Second Stage
+        {$match: { "totalSumAmount": { $gte: 15} } }
+     ])
+
+
+   //query to find sum by   price by item and  totalSumAmount>=15 and totalSumAmount<=30
+     db.sales.aggregate
+     ([
+        // First Stage
+        {$group :{_id : "$item",totalSumAmount: { $sum:"$price" } }},
+         // Second Stage
+          {$match: { "totalSumAmount": { $gte: 15,$lte:30} } }
+    ])
+
+             
+// to find totalSalePriceAmount,averageQuantity,totalSumPrice,count and finally count no items
+averageQuantity: { $avg: "$quantity" },
+// to find totalSalePriceAmount,averageQuantity,totalSumPrice,count and finally count no items
+    db.sales.aggregate([
+        // First Stage
+        {
+          $match : { "date": { $gte: new ISODate("2014-01-01"), $lt: new ISODate("2015-01-01") } }
+        },
+        // Second Stage
+        {
+          $group : 
+          { _id : { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+             totalSalePriceAmount: { $sum: { $multiply: [ "$price", "$quantity" ] } },
+             averageQuantity: { $avg: "$quantity" },
+             totalSumPrice: { $sum:"$price" },
+             totalSumQuantity: { $sum:"$quantity" },
+             count: { $sum: 1 }
+          }
+        },
+        // Third Stage
+        {
+          $sort : { totalSaleAmount: -1 }
+        }
+       ])
+
+
+// Query to  find totalSalePriceAmount,averageQuantity,totalSumPrice,totalSumQuantity,count no of items sold, and finally count no items sold 
+//between dates 2014-01-01" and 2015-01-01
+db.sales.aggregate([
+    // First Stage
+    {
+      $match: {date: { $gte: new ISODate("2014-01-01"), $lt: new ISODate("2015-01-01")
+        }
+      }
+    },
+    // Second Stage
+    {
+      $group: {
+        _id: '$item',
+        totalSalePriceAmount: { $sum: { $multiply: ["$price", "$quantity"] } },
+        averageQuantity: { $avg: "$quantity" },
+        totalSumPrice: { $sum: "$price" },
+        totalSumQuantity: { $sum: "$quantity" },
+        count: { $sum: 1 }
+      }
+    },
+    // Third Stage
+    {
+      $sort: { totalSalePriceAmount: -1 }
+    }
+  ])
+
+
+      
+//$set
+//Adds new fields to documents. $set outputs documents that contain all existing fields from the input documents and newly added fields.
+
+//The $set stage is an alias for $addFields.
+
+//Both stages are equivalent to a $project stage that explicitly specifies all 
+//existing fields in the input documents and adds the new fields.
+
+db.scores.drop()
+
+db.scores.insertMany( [
+    { _id: 1, student: "Rajesh", homework: [ 10, 5, 10 ], quiz: [ 10, 8 ], extraCredit: 0 },
+    { _id: 2, student: "Akash", homework: [ 5, 6, 5 ], quiz: [ 8, 8 ], extraCredit: 8 }
+ ] )
+
+ db.scores.aggregate( [ { $project: { homework: [ "10", "$5" ] } } ] )
+
+
+ // query to add sum of marks in homework and add sum of marks in quiz and finall add totalhomework+totalquiz
+ db.scores.aggregate( [
+    {
+        $set: { totalHomework: { $sum: "$homework" },totalQuiz: { $sum: "$quiz" }}
+    },
+    {
+      $set: { totalScore: { $add: [ "$totalHomework", "$totalQuiz", "$extraCredit" ] } }
+    }
+ ] )
+
+ db.scores.find()
+//Adding Fields to an Embedded Document
+//Use dot notation to add new fields to embedded documents.//
+
+
+ //$project
+//Passes along the documents with the requested fields to the next stage
+ //in the pipeline. The specified fields can be existing fields from the input documents or newly computed fields.
+ //$unwind
+//Deconstructs an array field from the input documents to output a document for each element. 
+//Each output document is the input document with the value of the array field replaced by
+//  the element.
+
+//how to use unwind
+
+db.inventory123.drop()
+
+db.inventory123.insertOne({ "_id" : 1, "item" : "ABC1", sizes: [ "S", "M", "L"] })
+
+//The following aggregation uses the $unwind stage to output a document for each element in the sizes array:
+
+db.inventory123.aggregate( [ { $unwind : "$sizes" } ] )
+
+db.clothing.drop()
+db.clothing.insertMany([
+    { "_id" : 1, "item" : "Shirt", "sizes": [ "S", "M", "L"] },
+    { "_id" : 2, "item" : "Shorts", "sizes" : [ ] },
+    { "_id" : 3, "item" : "Hat", "sizes": "M" },
+    { "_id" : 4, "item" : "Gloves" },
+    { "_id" : 5, "item" : "Scarf", "sizes" : null }
+  ])
+
+  db.clothing.aggregate( [ { $unwind: { path: "$sizes" } } ] )
+
+db.clothing.aggregate( [ { $unwind: "$sizes" } ] )
+
+
+db.clothing.aggregate( [ { $unwind: { path: "$sizes" } } ] )
+
+
+   //updateMany with $addFields
+  //Create an example temperatures collection that contains temperatures in Celsius 
+  // (if the collection does not currently exist, insert operations will create the collection):
+  
+  db.temperatures.drop()
+
+  db.temperatures.insertMany( [
+    { "_id" : 1, "date" : ISODate("2019-06-23"), "tempsC" : [ 4, 12, 17 ] },
+    { "_id" : 2, "date" : ISODate("2019-07-07"), "tempsC" : [ 14, 24, 11 ] },
+    { "_id" : 3, "date" : ISODate("2019-10-30"), "tempsC" : [ 18, 6, 8 ] }
+  ] )
+  
+  //To verify, query the collection:
+  db.temperatures.find()
+  
+  db.temperatures.updateMany( { },
+      [
+        { $addFields: { "tempsF": {
+              $map: {
+                 input: "$tempsC",
+                 as: "celsius",
+                 in: { $add: [ { $multiply: ["$$celsius", 9/5 ] }, 32 ] }
+              }
+        } } }
+      ]
+    )
+  //To verify, query the collection:
+  db.temperatures.find()
+
+db.cakeSales.insertMany( [
+  { _id: 1, flavor: "chocolate", salesTotal: 1580 },
+  { _id: 2, flavor: "strawberry", salesTotal: 4350 },
+  { _id: 3, flavor: "cherry", salesTotal: 2150 }
+] )
+
+//The following example:
+
+//retrieves the cake that has a salesTotal greater than 3000, which is the cake with an _id of 2
+
+//defines a targetTotal variable in let, which is referenced in $gt as $$targetTotal
+
+db.cakeSales.aggregate(
+   [
+      { $match: {$expr: { $gt: [ "$salesTotal", "$$targetTotal" ] } //4350>3000 -- strawberry
+      } }
+   ],
+   { let: { targetTotal: 3000 } }
+)
+
+
+db.books.drop()
+db.books.insertMany([
+ { "_id" : 8751, "title" : "The Banquet", "author" : "Dante", "copies" : 2 },
+ { "_id" : 8752, "title" : "Divine Comedy", "author" : "Dante", "copies" : 1 },
+ { "_id" : 8645, "title" : "Eclogues", "author" : "Dante", "copies" : 2 },
+ { "_id" : 7000, "title" : "The Odyssey", "author" : "Homer", "copies" : 10 },
+ { "_id" : 7020, "title" : "Iliad", "author" : "Homer", "copies" : 10 }
+])
+
+db.books.aggregate([
+ { $group : { _id : "$author", books: { $push: "$title" } } }
+])
+
+// should analyze
+db.books.aggregate([
+ // First Stage
+ {
+   $group : { _id : "$author", books: { $push: "$$ROOT" } }
+ },
+ // Second Stage
+ {
+   $addFields:
+     {
+       totalCopies : { $sum: "$books.copies" }
+     }
+ }
+])
+    

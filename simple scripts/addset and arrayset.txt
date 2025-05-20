@@ -1,0 +1,193 @@
+
+//The $addToSet operator adds a value to an array unless the value is 
+// already present, in which case $addToSet does nothing to that array.
+
+//The $addToSet function does nothing and does not add a duplicate value 
+// if the field is an array and the given value is already present in the array.
+db.alphabet.drop()
+
+db.alphabet.insertMany([ 
+    { _id: 1, 
+        letters: ["a", "b"] 
+    } ,
+    { 
+        _id: 2, 
+        letters: ["x", "y"] 
+    }
+    ,
+    { 
+        _id: 3, 
+        letters: ["m", "n"] 
+    }
+])
+// demo append c and letters to array letters whoose id=1
+db.alphabet.updateOne(
+   { _id: 1 },
+   { $addToSet: { letters: [ "c", "d" ] } }
+)
+// demo append w and x letters to array letters whoose id=2
+db.alphabet.updateMany(
+    { _id: 2 },
+    { $addToSet: { letters: [ "w", "x" ] } }
+ )
+
+ db.alphabet.updateMany(
+    { },
+    { $addToSet: { letters: [ "m", "n" ] } }
+ )
+
+db.alphabet.find()
+
+db.inventory.insertOne
+(
+   { _id: 1, 
+    item: "polarizing_filter", 
+    tags: [ "electronics", "camera" ] }
+)
+// 
+db.inventory.updateOne(
+   { _id: 1 },
+   { $addToSet: { tags: "accessories" } }
+  
+)
+db.inventory.find()
+//The following $addToSet operation has no effect 
+// because "camera" is already an element of the tags array:
+db.inventory.updateOne(
+   { _id: 1 },
+   { $addToSet: { tags: "camera"  } }
+)
+db.inventory.find()
+
+db.scores1.drop()
+
+db.scores1.insertMany([ 
+{ "_id" : 1, name:"Kavana", "sem" : 1, "marks" : [  70,  87,  90 ] },
+{ "_id" : 2, name:"Ayaan Sharief", "sem" : 2, "marks" : [  90,  77,  80 ] },
+{ "_id" : 3, name:"Kavya",  "sem" : 3, "marks" : [  83,  67,  95 ] },
+{ "_id" : 4, name:"Kushal", "sem" : 4, "marks" : [  75,  81,  99 ] }
+])
+
+//query to add or append 100 to end of array using addToSet where _id=1
+db.scores1.update( { "name": "Shifa Banu"}, { $addToSet: { "marks": 100 } } );
+
+db.scores1.find()
+db.scores1.updateMany( {}, { $addToSet: { "marks": 200 } } );
+
+//Example of MongoDB $addToSet operator to add multiple value using $each modifier
+db.scores1.update( { "sem": 4}, { $addToSet: { "marks":{$each:[55,65]}}});
+
+db.scores1.find({ "sem": 4})
+
+db.users.drop()
+
+db.users.insertMany([
+   { id: 1, name: 'Shivakumar', gender: 'M',"Hobbies":['Cricket','Tennis'] },
+   { id: 2, name: 'Nandish', gender: 'M',"Hobbies":['Football','Tennis'] },
+   { id: 3, name: 'Ravi', gender: 'M',"Hobbies":['Rugby','Baseball'] },
+   { id: 4, name: 'Yashwanth', gender: 'M',"Hobbies":['Hockey','Tennis'] },
+ ]);
+
+ db.users.update(
+    { name: 'Nandish' },
+    { $addToSet: { Hobbies: ["Table Tennis","Basketball" ] }}
+ )
+
+ db.users.find( { name: 'Nandish' })
+
+ db.users.update(
+    { },
+    { $addToSet: { Hobbies: { $each: ["Reading Books", "Watching Movies", "Swimming"] } } }
+ )
+db.users.find();
+
+
+//addFields
+//If we want to append a value 92 to the array achieve the following mongodb command can be used -
+//use addFields in aggregrate
+db.scores.drop()
+// miniproject example 
+db.scores.insertMany( [
+   {
+      _id: 1,
+      student: "Kavya ",
+      homework: [ 10, 5, 10 ],
+      quiz: [ 10, 8 ],
+      extraCredit: 0
+   },
+   {
+      _id: 2,
+      student: "Siddharth",
+      homework: [ 5, 6, 5 ],
+      quiz: [ 8, 8 ],
+      extraCredit: 8
+   }
+] )
+
+db.scores.aggregate( [
+   {
+     $addFields: {
+       totalHomework: { $sum: "$homework" } ,
+       totalQuiz: { $sum: "$quiz" }
+     }
+   },
+   {
+     $addFields:
+      { totalScore: { $add: [ "$totalHomework", "$totalQuiz", "$extraCredit" ] } }
+   }
+] )
+
+//Create student collection
+db.studentsdetails.drop()
+db.studentsdetails.insertMany([
+      {  
+         "_id": 1,
+         "FirstName": "Ayan ",
+         "LastName": "Sharief",
+         "Marks1": 20,
+         "Marks2": 18
+      },
+      {
+         "_id": 2,
+         "Name": "Kavya",
+         "LastName": "Deepak",
+         "Marks1": 17,
+         "Marks2": 19
+      }
+   ]
+)
+// how to add newfield Degree Using $set Operator to document studentsdetails
+db.studentsdetails.updateMany({}, { $set: { Degree: "computer science-data science" } });
+
+db.studentsdetails.find()
+
+//Add new filed with current date & time
+db.studentsdetails.updateMany(
+    {}, 
+    { 
+   $set: { Enrollment: new Date() } 
+});
+
+db.studentsdetails.find()
+
+//2. Add New Field based on Other Fields
+//Usage of $add operator to add Marks1+Marks2
+db.studentsdetails.updateMany(
+    {}, 
+    { 
+  $set: { TotalMarks: { $add: ["$Marks1", "$Marks2"] } } 
+}
+);
+
+ 
+
+
+
+
+
+
+
+
+
+
+ 

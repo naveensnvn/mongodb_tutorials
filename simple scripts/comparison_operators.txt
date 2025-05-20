@@ -1,0 +1,202 @@
+//example 1 comparison operaors 
+db.products.drop()
+db.products.insertMany([
+    { 
+      "_id" : 1, 
+      "name" : "IPhone", 
+      "price" : 80900, 
+      "releaseDate": ISODate("2011-05-14"), 
+      "spec" : { "ram" : 4, "screen" : 6.5, "cpu" : 2.66 },
+      "color":["white","black"],"storage":[64,128,256]},
+    { 
+      "_id" : 2, 
+      "name" : "Samsung", 
+      "price" : 60000, 
+      "releaseDate": ISODate("2011-09-01") ,
+       "spec" : { "ram" : 16, "screen" : 9.5, "cpu" : 3.66 },
+       "color":["white","black","purple"],
+       "storage":[128,256,512]},
+    { 
+      "_id" : 3, 
+      "name" : "SmartTablet", 
+      "price" : 89000, 
+      "releaseDate": ISODate("2015-01-14"), 
+      "spec" : { "ram" : 12, "screen" : 9.7, "cpu" : 3.66 },
+      "color":["blue"],
+      "storage":[16,64,128]},
+    { 
+      "_id" : 4, 
+      "name" : "SmartPad", 
+      "price" : 70000, 
+      "releaseDate": ISODate("2020-05-14"),
+      "spec" : { "ram" : 8, "screen" : 9.7, "cpu" : 1.66 },
+      "color":["white","orange","gold","gray"],
+      "storage":[128,256,1024]},
+    { 
+      "_id" : 5, 
+      "name" : "Redmi Note Pro", 
+      "price" : 50000,
+      "releaseDate": ISODate("2022-09-14"), 
+      "spec" : { "ram" : 4, "screen" : 9.7, "cpu" : 1.66 },
+      "color":["white","orange","gold","gray"],
+      "storage":[128,256]}
+  ])
+  //example 1 comparison operaors 
+ // query to list products whose price =5000
+  db.products.find({price: {$eq: 50000}}, {name: 1,price: 1,releaseDate:1,color:1})
+
+   // query to list products color=blue
+  db.products.find({"color":{"$eq":"blue"}})
+
+     // query to list products where releaseDate=2020-05-14
+  db.products.find({"releaseDate":{$eq:new ISODate("2020-05-14")}})
+ //$lt
+ //query to find products where price<=70000
+  db.products.find({price:{$lte:70000}})
+
+ //query to find products where price<60000
+  db.products.find({price:{$lt:60000}},{name:1,price:1,spec:1,_id:0})
+
+ //query to find products where releaseDate<2015-01-01
+  db.products.find({"releaseDate": {$lt: new ISODate('2015-01-01')}}, {name: 1,releaseDate: 1})
+
+   //query to find products where releaseDate<2015-01-01
+  db.products.find({"releaseDate":{$lt:new ISODate("2020-05-14")}})
+  
+
+//query to find products where price<=79000
+  db.products.find({price:{$lte:79000}})
+  //query to find products where price<=60000
+  db.products.find({price:{$lte:60000}},{_id:0,name:1,price:1,spec:1})
+
+    //query to find products between releaseDate 2015-12-31 and 2020-12-31
+  db.products.find({$and:[{"releaseDate":{$gte:new ISODate("2015-12-31")}},{"releaseDate":{$lte:new ISODate("2020-12-31")}}]})
+  
+  //$gt
+    //query to find products where price>80000
+  db.products.find({price:{$gt:80000}})
+   //query to find products where price>800
+
+  db.products.find({price:{$gt:800}},{_id:0,name:1,price:1})
+
+    //query to find products where releaseDate>2020-05-14
+  db.products.find({"releaseDate":{$gte:new ISODate("2020-05-14")}})
+  
+
+  
+  //$ne query to find products price!=50000
+  db.products.find({price:{$ne:50000}})
+    //$ne query to find products where price!=50000
+
+  db.products.find({price:{$ne:50000}},{_id:1,name:1,price:1,spec:1})
+    //$ne query to find products where releaseDate!=2020-05-14
+  db.products.find({"releaseDate":{$ne:new ISODate("2020-05-14")}})
+  
+ // $IN --fetch products whoose price are 80900,60000 using IN operator
+  db.products.find({price:{$in:[80900,60000]}})
+ // $IN --fetch products whoose price are 80900,60000 using IN operator
+  db.products.find({price:{$in:[80900,60000]}},{_id:1,name:1,price:1})
+
+   // $IN --fetch products whoose preleaseDate="2020-05-14","2015-01-14" using in oiperator
+  db.products.find({"releaseDate":{$in:new ISODate["2020-05-14","2015-01-14"]}})
+  
+  $nin
+  //demo of nin
+  db.products.find({price:{$nin:[80900,60000]}})
+  db.products.find({price:{$nin:[80900,60000]}},{_id:1,name:1,price:1})
+
+
+//example 2
+//2nd example
+db.employee.drop()
+db.employee.insertMany([
+{
+"_id" : 1,
+"name" : "Sanjay Das",
+"father_name" : "Nitin Das",
+"department" : "Finance",
+"experience" : 2,
+"mobile_no" : 9856321478,
+"gender" : "Male",
+"salary" : 22000,
+"age" : 26
+}
+,
+{
+"_id" : 2,
+"name" : "William",
+"father_name" : "Loius",
+"department" : "Softwre Tester",
+"experience" : 1,
+"mobile_no" : 7896541478,
+"gender" : "Male",
+"salary" : 20000,
+"age" : 21
+}
+,
+{
+"_id" : 3,
+"name" : "Amith kumar",
+"father_name" : "Ajay kumar",
+"department" : "Marketing manager",
+"experience" : 5,
+"mobile_no" : 8789654178,
+"gender" : "Female",
+"salary" : 36500,
+"age" : 25
+}
+,
+{
+"_id" : 4,
+"name" : "Harsha Jain",
+"father_name" : "Raksha Jain",
+"department" : null,
+"experience" : 4,
+"mobile_no" : 9045641478,
+"gender" : "Female",
+"salary" : 30000,
+"age" : 27
+}
+,
+{
+"_id" : 5,
+"name" : "Aftab Khan",
+"father_name" : "Yasir Khan",
+"department" : "HR",
+"experience" : 0,
+"mobile_no" : 6589741230,
+"gender" : "Male",
+"salary" : 15000,
+"age" : 20
+}
+,
+{
+"_id" : 6,
+"name" : "Priyank Chaturvedi",
+"father_name" : "Rahul Chaturvedi",
+"department" : "Softwre Tester",
+"experience" : 10,
+"mobile_no" : 9014536987,
+"gender" : "Male",
+"salary" : 55000,
+"age" : 30
+}
+])
+
+db.employee.find()
+// query details where  age<25
+db.employee.find({ age : { $lt : 25 }})
+// query details salary>20000
+db.employee.find({ salary : { $gt : 20000 }}
+// query details where  age>25   
+db.employee.find({ age : { $gt : 25 }})
+// query details salary>=20000
+db.employee.find({ salary : { $gte : 20000 }}) 
+// query details where  age>=25
+db.employee.find({ age : { $gte : 26 }})
+// query details where  salary<=30000
+db.employee.find({ salary : { $lte : 30000 }})//example 1 comparison operaors 
+
+
+
+

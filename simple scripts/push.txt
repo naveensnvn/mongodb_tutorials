@@ -1,0 +1,215 @@
+
+//push 
+db.students_scores2.drop()
+db.students_scores2.insertMany( [ 
+    { _id: 1,name:"Amogh", scores: [ 44, 78, 38, 80 ] } ,
+    { _id: 2,name:"Amankumar",  scores: [ 67, 99, 56, 99] } , 
+    { _id: 3,name:"Perana",  scores: [ 77, 68, 74, 89] } , 
+    { _id: 4,name:"Kishore",  scores: [ 79, 56, 48, 84] } 
+])
+
+
+//Append a Value to Arrays in Multiple Documents
+//Add the following documents to the students collection:
+
+//The query  appends 100 to the scores array in each document:
+
+db.students_scores2.updateMany(
+   { },
+   { $push: { scores: 100 } }
+)
+
+db.students_scores2.find()
+
+// query add no 89 to scores array whoose name='Kishore'
+db.students_scores2.updateOne(
+   { name:"Kishore" },
+   { $push: { scores: 89 } }
+)
+
+//Append Multiple Values to an Array
+//query to append numbers [90,92,85]  to scores array using each each operator 
+db.students_scores2.updateMany(
+   {},
+   { $push: { scores: { $each: [ 90, 92, 85 ] } } }
+) 
+
+
+db.students_scores2.find()
+
+//Append Multiple Values to an Array
+//query to append numbers [90,92,85]  to scores array using each each operator whose name='Perana'
+db.students_scores2.updateOne(
+   {name:"Perana"},
+   { $push: { scores: { $each: [ 90, 92, 85 ] } } }
+)  
+db.students_scores2.find({ name:"Perana" })
+
+// Create Collection example 2
+db.student.drop()
+db.student.insertMany([
+      {  
+         _id: 1,
+         name: "Laksmi",
+         course: ["Python", "Java", "MongoDB"],
+         marks: []
+ 
+      },
+      {
+         _id: 2,
+         name: "Kavana",
+         course: ["Python", "Java", "MongoDB"],
+         marks: []
+      },
+      {
+         _id: 3,
+         name: "Ananya",
+         course: ["Python", "Java", "MongoDB"],
+         marks: []
+      },
+      {
+         _id: 4,
+         name: "Kasifa Zehra",
+         course: ["Python", "Java", "MongoDB"],
+        marks: []    }
+   ]
+)
+
+
+// how to add Adding new value in existing array using push where _id:1
+db.student.find()
+
+db.student.updateOne(
+   { name: "Laksmi" },
+   { $push: { marks: 99 } }
+)
+db.student.find({name: "Laksmi"})
+// how to add Adding new value in existing array using push 
+db.student.updateMany(
+   {  },
+   { $push: { marks: 99 } }
+)
+db.student.find()
+//Using the $each modifier of $push operator to add multiple new values to the array
+// Usage of $each operator
+// add array of marks ie 90,78,50 to marks array where name='shreyas' using push and  updateOne
+db.student.updateOne(
+   { name: 'Ananya' },
+   { $push: { marks: { $each: [90, 78, 50] } } }
+)
+db.student.find()
+db.student.find({name: "Ananya"})
+// add array of marks ie 90,78,50 to marks array  using push and  updateMany
+db.student.updateMany(
+   { },
+   { $push: { marks: { $each: [100, 200, 300] } } }
+)
+db.student.find()
+//4. Using the $position modifier of the $push operator to add values in an array
+//We can use the $position modifier of the MongoDB $push operator to specify the position in the array where the new element 
+//should be added. The $position modifier takes the index value at which the new value should be placed. Here is an example.
+// Usage of $position modifier
+
+// query to PUSH C++ VALUE TO course ARRAY AT POSITION 0 USING push AND  updateOne TO SPEFICE STUDENT NAME:Kasifa Zehra
+db.student.updateOne(
+   { name:'Kasifa Zehra'},
+   { $push: { course: { $each: ["C++"], $position: 0 } } }
+)
+
+db.student.find({name: "Kasifa Zehra"})
+// query to PUSH React VALUE TO course ARRAY AT POSITION 0 USING push AND  updupdateManyateOne
+db.student.updateMany(
+   {},
+   { $push: { course: { $each: ["React"], $position: 0 } } }
+)
+
+db.student.find()
+//5. Using the $slice modifier of $push operator to limit the values to add in an array
+//#Usage of $slice modifier
+
+// javascript is added at 3td position in course array of document using push,updateOne
+//each and slice for particular student  Nikitha
+db.student.updateOne(
+   {name: "Nikitha", },
+   { $push: { course: { $each: ["Javascript"], $slice: -3 } } }
+)
+db.student.find({name: "Nikitha"})
+
+// javascript is added at 3td position in course array of document using push,updateMany
+//each and slice 
+db.student.updateMany(
+   { },
+   { $push: { course: { $each: ["Javascript"], $slice: -3 } } }
+)
+db.student.find({})
+
+db.fruits.drop()
+db.fruits.insertMany([ 
+{
+   "_id": 1,
+   "name": "Yashwanth",
+   "favorite_fruits": ["banana", "cherry", "grape"]
+},
+{
+   "_id": 2,
+   "name": "Bhumika",
+   "favorite_fruits": ["mango", "orange", "apple"]
+}
+,
+{
+   "_id": 3,
+   "name": "Manjunathb",
+   "favorite_fruits": ["banana", "mango", "cherry"]
+}
+])
+// 
+db.fruits.updateOne(
+   {  "name": "Yashwanth"},
+   { $push: { "favorite_fruits": "orange" } }
+ )
+ // add orange to array  favorite_fruits where name": "Yashwanth" using push and updateOne
+ db.fruits.find({ "name": "Yashwanth"})
+
+
+ // add jack fruits to array  favorite_fruits to whole document  using push and updateOne
+ db.fruits.updateMany(
+   {},
+   { $push: { "favorite_fruits": "jack fruits" } }
+ )
+ db.fruits.find()
+
+ // add two extar fruits banana and mangoes to favorite_fruits array where name is name": "Bhumika using push  ,each and updateOne
+ db.fruits.updateOne(
+   { "name": "Bhumika" },
+   { $push: { "favorite_fruits": { $each: ["banana", "mangoes"] } } }
+ )
+ db.fruits.find({ "name": "Bhumika"})
+
+// add cherry fruit to 4th poistion in favorite_fruits array using push ,each and updateMany
+ db.fruits.updateMany(
+   { },
+   { $push: { "favorite_fruits": { $each: ["cherry"], $slice: -4 } }}
+ )
+ db.fruits.find()
+
+ db.fruits.updateOne(
+   {  "name": "Manjunathb"},
+   { $push: { "favorite_fruits": { $position: 1, "apple"} } }
+ )
+ db.fruits.updateOne(
+// add new friut apple at 1 st postional in favorite_fruits array for particular person name": "Manjunathb  using push,each,position and updateOne
+ db.fruits.updateOne(
+   { "name": "Manjunathb" },
+   { $push: {favorite_fruits: { $each: ["apple"], $position: 1 }}}
+ )
+
+ db.fruits.find({ "name": "Manjunathb"})
+
+
+
+
+
+
+
+
+  

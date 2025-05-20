@@ -1,0 +1,79 @@
+// example1 of slice 
+
+db.cakes.drop()
+
+db.cakes.insertMany([ 
+
+    { "_id" : 1, "name" : "Prithvi", favorites: [ "chocolate", "cake", "butter", "apples" ] },
+    { "_id" : 2, "name" : "Shivakumar", favorites: [ "apples", "pudding", "pie" ] },
+    { "_id" : 3, "name" : "Pradeep", favorites: [ "pears", "pecans", "chocolate", "cherries" ] },
+    { "_id" : 4, "name" : "Mukesh", favorites: [ "ice cream" ] }
+])
+
+//example Demonstarte use of slice
+db.cakes.find( {}, {favorites: { $slice: 2 } } )
+
+db.cakes.find( {}, {favorites: { $slice: -2 } } )
+
+
+db.cakes.find(  {name:'Prithvi'},{favorites: { $slice: 2 } } )
+
+db.cakes.find(  {name:'Pradeep'},{favorites: { $slice: -2 } } )
+
+
+// example3 of slice 
+ db.posts.find({},{comments:{$slice:-2}})
+
+ db.marks.insertMany([  
+ {"_id" : 1,"usn" : "4AD23CD023","sem" : "sem-1","score" : [ 45,59, 75,67,52,70 ]},
+ {"_id" : 2,"usn" : "4AD23CD006","sem" : "sem-1","score" : [ 45,100, 75,78,52,70 ]},
+ {"_id" : 3,"usn" : "4AD23CD045","sem" : "sem-1","score" : [ 67,59, 88,67,99,70 ]},
+ {"_id" : 4,"usn" : "4AD23CD078","sem" : "sem-1","score" : [ 75,49, 75,97,62,70 ]},
+])
+
+//example Demonstarte use of slice
+db.marks.find({ },{ "score": { $slice: 2}})
+
+db.marks.find({"usn":'4AD23CD078'},{'score':{$slice:2}})
+
+
+
+// example2 of slice 
+
+
+db.college.drop()
+
+  db.college.insertMany([
+  {
+    "_id": 1,
+    "branch":'cse',
+    "students_name": ["Rachana", "Punith Gowda", "Suchithra", "Monika", "Nitin Singh"]
+  }
+  ,
+  {
+    "_id": 2,
+    "branch":'cse-ds',
+    "students_name": ["Maheshwari", "Harsha A S", "Namitha", "Manasa", "Pramodini"]
+  }
+])
+
+// Demonstarte working of slice using aggregate and $match
+
+db.college.aggregate([
+{$project:{fetching_first_two_students:{$slice:['$students_name',2]}}}
+])
+
+db.college.aggregate([
+    {$project:{fetching_first_two_students:{$slice:['$students_name',-2]}}}
+    ])
+
+ db.college.aggregate([
+{$match:{'branch':'cse'}},
+{$project:{fetching_first_two_students:{$slice:['$students_name',2]}}}
+])
+
+db.college.aggregate([
+    {$match:{'branch':'cse-ds'}},
+    {$project:{fetching_first_two_students:{$slice:['$students_name',-2]}}}
+    ])
+

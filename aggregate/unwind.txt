@@ -1,0 +1,234 @@
+//unwind
+
+db.inventory.drop()
+
+db.inventory.insertOne({ "_id" : 1, "item" : "ABC1", sizes: [ "S", "M", "L"] })
+//query demo of unwind
+db.inventory.aggregate( [ { $unwind : "$sizes" } ] )
+
+
+
+db.inventory2.drop()
+
+  db.inventory2.insertMany([
+    { "_id" : 1, "item" : "Shirt", price: NumberDecimal("80"), "sizes": [ "S", "M", "L"] },
+    { "_id" : 2, "item" : "Shorts", price: NumberDecimal("120"), "sizes" : [ ] },
+    { "_id" : 3, "item" : "Hat", price: NumberDecimal("160"), "sizes": "M" },
+    { "_id" : 4, "item" : "Gloves" , price: NumberDecimal("10") },
+    { "_id" : 5, "item" : "pants", price: NumberDecimal("5.75"), "sizes" : null }
+ ])
+
+ db.inventory2.aggregate( [
+    { $unwind: { path: "$sizes"} }
+ ] )
+//The following $unwind operation uses the preserveNullAndEmptyArrays option to include documents whose sizes 
+// field is null, missing, or an empty array.
+ db.inventory2.aggregate( [
+    { $unwind: { path: "$sizes", preserveNullAndEmptyArrays: true } }
+ ] )
+ 
+ db.inventory2.aggregate( [
+    {
+      $unwind:
+        {
+          path: "$sizes",
+          includeArrayIndex: "arrayIndex"
+        }
+     }])
+
+db.inventory2.aggregate( [
+        // First Stage
+        { $unwind: { path: "$sizes", preserveNullAndEmptyArrays: true }},
+        // Second Stage
+        {$group:{_id: "$sizes",averagePrice: { $avg: "$price" }}},
+        // Third Stage
+        {
+          $sort: { "averagePrice": -1 }
+        }
+     ] )
+db.people.insertMany([ 
+        {
+            "_id": 1,
+            "name": "Michael",
+            "age": 31,
+            "phone_no": 8654793212,
+            "company": "javatpoint",
+            "skills": ["C", "C++", "PHP", "Java", ".Net"]
+        },
+        {
+            "_id": 2,
+            "name": "John",
+            "age": 28,
+            "phone_no": 1234567890,
+            "company": "techguy",
+            "skills": ["JavaScript", "Python", "Go"]
+        },
+        {
+            "_id": 3,
+            "name": "Alice",
+            "age": 26,
+            "phone_no": 9876543210,
+            "company": "webmasters",
+            "skills": []
+        },
+        {
+            "_id": 4,
+            "name": "David",
+            "age": 40,
+            "phone_no": 5647382910,
+            "company": "devteam",
+            "skills": ["Ruby", "PHP", "Node.js"]
+        }
+])
+
+db.people.aggregate([
+    {
+        $unwind: "$skills"
+    }
+]);
+
+//Example 2: Handling Empty Arrays
+db.people.aggregate( [
+    // First Stage
+    { $unwind: { path: "$skills", preserveNullAndEmptyArrays: true }},
+    // Second Stage
+ ] )
+
+ // Unwinding Nested Arrays
+ //https://mongodb.github.io/mongo-java-driver/3.9/javadoc/com/mongodb/client/model/UnwindOptions.html
+ //isPreserveNullAndEmptyArrays​()----If true the unwind stage will include documents that have null values or empty arrays
+ //	preserveNullAndEmptyArrays​(Boolean preserveNullAndEmptyArrays)--Sets true if the unwind stage should include documents that have null values or empty arrays
+ // 	includeArrayIndex​(String arrayIndexFieldName)---Sets the field to be used to store the array index of the unwound item
+ //getIncludeArrayIndex​()--	Gets the includeArrayIndex field if set or null
+
+ //ex 3
+//https://sparkbyexamples.com/mongodb/unwind-in-mongodb-explained/
+//Adding array field
+db.student1.drop()
+db.student1.insertOne({ "_id" : 1, "name" : "stefan", "course": [ "MongoDB", "Java", "Python"] })
+//Usage of $unwind operator
+db.student1.aggregate([  { $unwind: "$course" } ])  
+//3. By Using $unwind preserveNullEmptyArrays option
+//By default, the $unwind operator removes documents that have empty arrays. However, 
+//we can use the preserveNullAndEmptyArrays option to keep these documents in the result set. 
+// For this, we have created a separate collection with some empty arrays.
+$unwind: { path: "$course", preserveNullAndEmptyArrays: true } }
+])
+//By Using includeArrayIndex option
+//So, consider the query where the $unwind operator unwinds the course field as the path option is set with this field. Then, the includeArrayIndex option is deployed to add a new field to the output documents called arrayIndex.
+//  It contains the index of the course in the original course array.
+
+//Usage of includeArrayIndex option
+db.Student2.aggregate([
+  { $unwind: { path: "$course", includeArrayIndex: "arrayIndex" } }
+])
+//$unwind operator on an embedded array
+// Create Collection
+db.student.drop()
+
+db.student.insertMany([  
+  {  
+    _id: "1",  
+    "groups" : [  
+       {   
+         "name" : "Yashwant", 
+         "course": [ "MongoDB", "Java"]  
+       },  
+       {  
+         "name" : "Mahadevswmay", 
+         "course": [ "PHP", "Python"]  
+       }  
+    ]  
+  },  
+  {  
+    _id: "2",  
+    "groups" : [  
+       {   
+         "name" : "kushal", 
+         "course": [ "C++", "Csharp"]  
+       },  
+       {  
+         "name" : "Bhumika", 
+         "course": [ "Perl", "Data Science"] 
+     }  
+    ]  
+  }  
+])  
+// Usage of $unwind operator on embedded array
+db.student.aggregate({$unwind: "$groups"})
+
+
+db.users.drop()
+db.users.insertMany( [
+    {  
+        _id:1,
+        "name" : "Laura",  
+        "age" : 31,  
+        "phone_no" : 8654793212 , 
+        "company" : "microsoft",  
+        "skills" : ["C", "C++", "PHP", "Java", ".Net", ]  
+    } ,
+    {  
+        _id:2,
+        "name" : "Jennifer",  
+        "age" : 31,  
+        "phone_no" : 7854793242,  
+        "company" : "meta",  
+        "skills" : ["django", "python", "CSS", "HTML", "JAVASCRIPT", ]  
+    } 
+
+]);
+db.users.find()
+
+db.users.aggregate({  
+    $project : {  
+        name : 1,  
+        phone_no : 1,  
+        age : 1,  
+        skills : 1  
+    }},  
+    { $unwind: "$skills" }  
+)  
+// Using $unwind operator on embedded arrays
+
+db.product.drop()
+db.product.insertMany([  
+    {  
+      _id: "1",  
+      "items" : [  
+         {  
+           "name" : "Eraser",  
+           "work" : [ "write", "office" ],  
+           "cost" : 10,  
+           "total_quantity" : 5  
+         },  
+         {  
+           "name" : "pencil",  
+           "work" : [ "write", "school" ],  
+           "cost" : 2,  
+           "total_quantity" : 5  
+         }  
+      ]  
+    },  
+    {  
+      _id: "2",  
+      "items" : [  
+         {  
+           "name" : "monitor",  
+           "work" : [ "collage", "office" ],  
+           "cost" : 5000,  
+           "total_quantity" : 1  
+         },  
+         {  
+           "name" : "mouse",  
+           "work" : [ "laptop", "CPU" ],  
+           "cost" : 300,  
+           "total_quantity" : 5  
+       }  
+      ]  
+    }  
+  ])  
+  db.product.aggregate({$unwind: "$items"})
+  db.product.aggregate([{ $unwind : "$items" },{ $unwind : "$items.work" }])
+
+

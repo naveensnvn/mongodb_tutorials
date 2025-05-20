@@ -1,0 +1,71 @@
+//MongoDB $concat Operator
+
+db.students_details.drop()
+
+db.students_details.insertMany([ 
+    {  
+      "_id" : 1,  
+      "name" : "Manasa",  
+      "surname" : "Raju",  
+      "department" : "B-tech",  
+      "fees" : 80000  
+    }  
+    ,
+    {  
+      "_id" : 2,  
+      "name" : "Aman",  
+      "surname" : "Kumar",  
+      "department" : "BCA",  
+      "fees" : 55000  
+    }  
+    ,
+    {  
+      "_id" : 3,  
+      "name" : "Niktha",  
+      "surname" : "Rao",  
+      "department" : "MCA",  
+      "fees" : 85000  
+    } 
+    , 
+    {  
+      "_id" : 4,  
+      "name" : "Ajay",  
+      "surname" : "Gowda",  
+      "department" : "B.com",  
+      "fees" : 60000  
+    }  
+    ,
+    {  
+      "_id" : 5,  
+      "name" : "Nitin",  
+      "surname" : "Singh",  
+      "department" : "null",  
+      "fees" : 80000  
+    }  
+  ]) 
+  // query to demo of concate function in aggregate
+  db.students_details.aggregate(  
+      [  
+        { $project : {   
+                      _id : 1,  
+                      name : { $concat: ["my name is: ", "$name",":", "$surname" ] },  
+                       department : 1,  
+                      fees : 1  
+                       }  
+        }  
+      ]  
+    ) 
+   // query to demo of concate function in aggregate 
+    db.students_details.aggregate(  
+      [  
+        { $match : { _id : { $in: [ 4, 5, 6, 7 ] } } },  
+           { $project : {   
+                                 _id : 1,  
+                                 Student : { $concat: [ "$name", " ", "$surname", " works in  ", "$department"] },  
+                                 fees : 1  
+                               }  
+        }  
+      ]  
+    )  
+  
+  

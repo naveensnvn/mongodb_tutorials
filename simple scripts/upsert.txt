@@ -1,0 +1,169 @@
+
+ //Upsert and update() Method
+ //The upsert in MongoDB can be used with the update() method in MongoDB. By default, its value is set to false. However, when set to true, the update() method behaves as follows:
+ 
+ //If a document or documents that match the given query criteria are found, the update() method will update the document/documents.
+ //If no document/documents match the given query criteria, the update() method will insert a new document into the collection.
+ //To avoid inserting the same document multiple times, creating a unique index on the field used as the query criteria is recommended. This way, if multiple update() operations with upsert: true are attempted for the same document, only one operation will successfully insert a new document, while subsequent operations will result in an error due to the uniqueness constraint imposed by the unique index.
+ db.vehicles.drop()
+
+ db.vehicles.insertMany([
+    {   
+        _id:1,
+        "companyName":"Toyota", 
+        "modelName":"GTR",
+        "launchYear":2016,
+        "type":"Sports Vehicle",
+        "registeredNo":"EPS 5561"
+    },
+    { 
+        _id:2,
+        "companyName":"BMW",
+        "modelName":"X5",
+        "launchYear":2020,
+        "type":"SUV",
+        "registeredNo":"LLS 6899"
+    },
+    {
+        _id:3,
+        "companyName":"Mercedes",
+        "modelName":"Gold Wing",
+        "launchYear":2018,
+        "type":"Car",
+        "registeredNo":"LKS 2477"
+    }]);
+
+//query checks if modelName=X5 is present ,if present replces BMW with  Hero Honda in company name field
+    db.vehicles.updateOne(
+      {
+          "modelName":"X5"
+      },
+      {
+          $set:{"companyName":"Hero Honda" }
+      },
+      {
+          "upsert":true
+      });
+
+db.vehicles.find()
+
+
+// query to check modelName  LBL EXISTS,
+  db.vehicles.update(
+  {
+      "modelName":"LBL"
+  },
+  {
+
+      "$set":{ "companyName":"Lamborghini" },
+      "$setOnInsert":
+      {
+        _id:4,
+         "launchYear" : 2024,
+         "type" : "Car",
+        "registeredNo" : "EPS 5789"
+      },  
+  },
+  {
+      "upsert":true
+  });
+
+
+  db.vehicles.find()
+
+// query to find companyName='Toyota'', if found replace Toyota with Porsche and other details inserted
+  db.vehicles.update(
+    {
+        "companyName":"Toyota",
+    },
+    {
+        "$set":{"companyName":"Porsche"},
+        "$setOnInsert":
+        {
+    "modelName":"HH",      
+     "launchYear" : 2023,
+      "type" : "Car",
+      "registeredNo" : "HH 5562"
+        },  
+    },
+    {
+        "upsert":true
+    });
+
+    db.vehicles.find()
+
+//findAndModify -- checks if modelName='X5' if present repalce hero honda with Ferrari 
+    db.vehicles.findAndModify(
+      { 
+        query:{ "modelName":"X5"},
+          update: {"$set":{ "companyName":"Ferrari" }
+          },
+          "upsert":true,
+          "new":true
+      });
+
+db.vehicles.find()
+
+
+      db.vehicles.replaceOne(
+        {
+            "companyName": "Ferrari",
+        },
+        {
+            "modelName" : "VV",
+            "companyName" : "volkswagen",
+            "launchYear" : 2018,
+            "type" : "Bike",
+            "registeredNo" : "VV 5578"
+        },
+        {
+            "upsert":true
+        });
+
+        db.vehicles.find()
+ 
+ 
+ db.studentsdetails2,drop()
+
+ db.studentsdetails2.insertMany([
+    { id: 1, name: 'Amulya',college:'ATME' ,age: '21',salary:80000 },
+    { id: 2, name: 'Bharath',college:'SJCE', age: '24',salary:90000 },
+    { id: 3, name: 'Chethan', college:'VVIET',age: '21',salary:70000 },
+    { id: 4, name: 'Amurtha',college:'MIT', age: '19',salary:86000 },
+    { id: 5, name: 'Suhas',college:'VVCE', age: '19',salary:77000 },
+    { id: 5, name: 'Ajay Kumar',college:'NIE', age: '19',salary:66000 }
+  ]);
+  //  query to find name with name':'Ajay Kumar and change name,age salary of that person using upsert
+  db.studentsdetails2.updateMany(
+    {'name':'Ajay Kumar'},
+    { $set: { 'name':'Amit Kumar',age: 21,salary:50000 }},
+    { upsert: true }
+  );
+  
+  db.studentsdetails2.find()
+
+  db.studentsdetails2.find({'name':'Amit Kumar'});
+//  query to find name with name':' Amurtha and change age salary of that person using upsert
+  db.studentsdetails2.findAndModify({
+    query: {'name':'Amurtha'},
+    update: {$set: {age:30,salary:99000} },
+    upsert: true
+ })
+  
+ db.studentsdetails2.find()
+//  query to find name with name':' Bharath and change name, age of that person using upsert
+ db.studentsdetails2.update(
+    { 'name': 'Bharath'},
+    { $set: {'name': 'Yogesh', age: '30'} },
+    { upsert: true}
+  );
+
+  db.studentsdetails2.find()
+
+
+  
+
+
+
+
+

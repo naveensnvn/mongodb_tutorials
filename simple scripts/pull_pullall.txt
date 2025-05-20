@@ -1,0 +1,179 @@
+//pull
+db.Fruits_Stall.drop()
+///$pull
+//The $pull operator removes from an existing array all instances of a value or 
+// values that match a specified condition.
+db.Fruits_Stall.insertMany( [
+    {
+       _id: 1,
+        name:"Janatha_Fruits_Stall",
+       fruits: [ "apples", "pears", "oranges", "grapes", "bananas" ],
+       vegetables: [ "carrots", "radish", "brinjal", "carrots" ]
+    },
+    {
+       _id: 2,
+       name:"Arya_Fruits_Stall",
+       fruits: [ "plums", "kiwis", "oranges", "bananas", "apples" ],
+       vegetables: [ "broccoli", "beans", "carrots", "onions" ]
+    }
+ ] )
+ //The following operation removes
+ db.Fruits_Stall.updateMany(
+     { },
+     { $pull: { fruits: { $in: [ "apples", "oranges" ] }, vegetables: "carrots" } }
+ )
+ db.Fruits_Stall.find({})
+
+ db.Fruits_Stall.updateMany(
+   { name:"Arya_Fruits_Stall"},
+   { $pull: { fruits: { $in: [ "plums", "kiwis" ] }, vegetables: "broccoli" } }
+)
+db.Fruits_Stall.find({name:"Arya_Fruits_Stall"})
+
+
+//example 5
+db.survey.drop()
+ db.survey.insertMany([
+    {
+       _id: 1,
+       results: [
+          { item: "Apples", score: 5 },
+          { item: "Bannas", score: 8 }
+       ]
+    },
+    {
+       _id: 2,
+       results: [
+          { item: "Grapes", score: 8 },
+          { item: "Papaya", score: 4}
+       ]
+    }
+ ] )
+//The following operation removes all elements from the results array that 
+// contain both a score field equal to 8 and an item field equal to "B":
+//The $pull operator removes from an existing array all instances of a value or values that match a specified condition.
+// nested documents
+  )
+  // query  removes field equal to 8 and an item field equal to "Bannas" using pull and updateMany
+
+ db.survey.updateMany(
+    { },
+    { $pull: { results: { score: 8 , item: "Bannas" } } }
+  )
+
+  db.survey.find()
+
+//$pullAll
+//The $pullAll operator removes all instances of the specified values from an existing array. 
+// Unlike the $pull operator that removes elements by specifying a query, 
+//$pullAll removes elements that match the listed values.
+
+db.surveys2.drop()
+
+db.surveys2.insertMany([ 
+    { _id: 1, name:'Kavana',scores: [ 0, 2, 5, 5, 1, 0 ] } ,
+    { _id: 2, name:'deepika',scores: [ 0, 2, 5, 5, 1, 0 ] } ,
+    { _id: 3, name:'safwan',scores: [ 0, 2, 5, 5, 1, 0 ] } ,
+    { _id: 4, name:'rajesh',scores: [ 0, 2, 5, 5, 1, 0 ] } 
+])
+// query remove elements 0 and 5 in array scores using pullAll and updateOne whose name='Kavana'
+db.surveys2.updateOne( 
+   {  name:'Kavana' }, 
+   { $pullAll: { scores: [ 0, 5 ] } } 
+)
+
+db.surveys2.find({name:'Kavana'})
+// query remove elements 0 and 5 in array scores using pullAll and updateOne 
+db.surveys2.updateMany( 
+    {},
+   { $pullAll: { scores: [ 2, 1 ] } } 
+)
+
+db.surveys2.find()
+
+//pull operator
+db.product123.drop()
+
+db.product123.insertMany([ 
+   {
+    _id: 100,
+    quantity: 250,
+    instock: true,
+    details: { model: "14QQ", make: "Clothes Corp" },
+    ratings: [{ by: "Ajay Kumar", rating: 4 }],
+    tags: ["apparel", "clothing","Kitchen Items",'Electrical Items'],
+  }
+  ,
+  {
+   _id: 101,
+   quantity: 25,
+   instock: true,
+   details: { model: "14QA", make: "ABC Clothes Corp" },
+   ratings: [{ by: "Chandana", rating: 4 }],
+   tags: ["apparel", "clothing","Kitchen Items",'Electronic Items'],
+ }
+]);
+
+// query to remove clothing from array tags using pull operator and updateOne
+  db.product123.updateOne({ _id: 100 }, { $pull: { tags: "clothing" } });
+
+  db.product123.find()
+
+// query to remove "Kitchen Items", "apparel" from array tags using pullall operator and updateMany
+  db.product123.updateMany(
+    { },
+    { $pullAll: { tags: ["Kitchen Items", "apparel"] } }
+  );  
+
+  db.student_marks.drop()
+// example 4
+  db.student_marks.insertMany([ 
+    { 
+        _id : 1 ,
+         name:"amogh",
+        marks:[50, 40, 10, 85, 60, 94] 
+    },
+    { 
+        _id : 2 ,
+         name:"kavana",
+        marks:[50, 40, 10, 85, 60, 94] 
+    },
+    { 
+        _id : 3,
+         name:"rajesh",
+        marks:[50, 40, 10, 85, 60, 94] 
+    },
+])
+
+// query to remove marks>50 in array marks in documnet where name:"kavana"  using pull and updateOne
+db.student_marks.updateOne({  name:"kavana" }, { $pull: { marks:{$gt:50 }} });
+
+db.student_marks.find({  name:"kavana" })
+// query to remove marks>50 in array marks in documnet   using pull and updateMany
+db.student_marks.updateMany({}, { $pull: { marks:{$gt:50 }} });
+db.student_marks.find()
+
+
+// nested documents
+//The operation updated the results array in each document it matched. db.collection.updateMany()
+// removed documents from results when an element of the embedded 
+// answers array matched the selection conditions in the highlighted line.
+db.survey.updateMany(
+   { },
+   {
+      $pull:
+         {
+            results:
+               {
+                  answers: { $elemMatch: { q: 2, a: { $gte: 8 } } }
+               }
+         }
+   }
+ )
+ db.survey.find()
+
+//In MongoDB, you can use the $pullAll operator to remove all instances of the specified values from an existing array.
+
+//Use $pullAll in conjunction with a method such as update(), 
+//updateOne(), or updateMany() to update the specified document/s with the change.
+

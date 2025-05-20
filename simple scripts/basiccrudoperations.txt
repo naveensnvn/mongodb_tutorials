@@ -1,0 +1,248 @@
+//perform basic CRUD(Create,
+//Read,Update & Delete) operations. Execute MangoDB basic Queries using CRUD
+//operations.
+
+db.books.drop()
+
+db.books.insertMany([
+    {
+    _id:1,
+    title: "C programming language",
+    author: "Dennis Ritchie,Brian Kernighan",
+    category: "Programming",
+    published_year: 1978
+    },
+    {
+    _id:2,
+    title: "Fundamentals of Database System",
+    author: "Elmasri Ramez,Navathe Shamkant",
+    category: "Database",
+    published_year: 2003
+    },
+    {
+    _id:3,
+    title: "Power BI for Jobseekers",
+    author: "Alan Murray",
+    category: "Business Intelligence",
+    published_year: 2023
+    },
+    {
+    _id:4,
+    title: "Introduction to Algorithms",
+    author: "Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest",
+    category: "Algorithms",
+    published_year: 1994
+    },
+    {
+    _id:5,
+    title: "Python Crash Course: ",
+    author: "Eric Matthes",
+    category: "Python",
+    published_year: 2020
+    }
+    ])
+
+db.books.insertOne({
+        _id:6,
+        title: "Pro Git",
+        author: "Scott Chacon, Ben Straubt",
+        category: "Software Git",
+        published_year: 2015
+    })
+
+// query to display no of records on books document  
+db.books.find().count()
+
+//display contents of book whoose books are published after than 2000
+db.books.find({published_year:{$gte:2000}})
+
+//display contents of book whoose books are published after  1995  but before 2015 using and operator
+
+db.books.find({
+    $and: [ {published_year:{$gte:2000}},{published_year:{$lte:2015}}]
+})
+
+///To update a specific book (e.g., change the author of a book): using UpdateOne
+
+db.books.updateOne({title:"C programming language"}, {$set: {"author":"Ken Thompson"}})
+
+db.books.find({"author":"Ken Thompson"})
+
+//Demonstrate use of MongoDB updateMany method 
+db.books.updateMany({published_year:{$lte:2010}},{$set:{category:"CSE-Data Science Engg Books"}})
+
+db.books.find()
+
+
+//To delete a specific book from the collection (e.g., delete a book by title):
+
+db.books.deleteOne({title:"Introduction to Algorithms"})
+
+db.books.find({title:"Introduction to Algorithms"})
+
+//Delete Multiple Documents
+//To delete multiple books based on a condition (e.g., delete all books published before 2000:
+
+db.books.deleteMany({published_year:{$lte:2000}})
+
+db.books.find()
+
+//Delete the Collection Using drop():
+
+//To delete a collection named books, use the drop() method with the name of the collection:
+db.books.drop()
+
+
+//example -2
+//example crud operation
+db.movies.drop()
+
+db.movies.insertMany( [
+    { 
+        _id: 1, 
+        "movie_name": "The Avengers",
+        "release_year": 2012,
+        "movie_rating": 8,
+        "starring": ["Robert Downing Jr","Chris Evans","Chris H"],
+        "runtime": 120,
+        "totalReviews": 2012,
+        "director": "Joss W"
+    },
+    { 
+        
+        _id: 2, 
+        "movie_name": "The Good, the Bad and the Ugly",
+        "release_year": 1966,
+        "movie_rating": 8.8,
+        "starring": ["Clint Eastwood","Lee Van"],
+        "runtime": 120,
+        "totalReviews": 2000,
+        "director": "Sergio Leone"
+    
+    },
+    { 
+        _id: 3, 
+        "movie_name": "Terminator-2",
+        "release_year": 1992,
+        "movie_rating": 7.8,
+        "starring": ["Arnold Schwarzenegger", "Linda Hamilton","Robert Patrick"],
+        "runtime": 115,
+        "totalReviews": 720,
+        "director": "James Cameron"
+    
+    },
+    { 
+        _id: 4, 
+        "movie_name": "The Pursuit of Happiness",
+        "release_year": 2008,
+        "movie_rating": 7.6,
+        "starring": ["Will Smith","Jade Smith"],
+        "runtime": 150,
+        "totalReviews": 95,
+        "director": "Gabriel M"
+        
+        
+        },
+{
+    _id: 5, 
+    "movie_name": "Rocky",
+    "release_year": 1976,
+    "movie_rating": 8.2,
+    "starring": ["Sylvester Stallone","Carl Weathers", "Burt Young"],
+    "runtime": 100,
+    "totalReviews": 1976,
+    "director": "John Adams"
+   
+   },
+   {
+    _id: 6,
+    "movie_name": "The Godfather",
+    "release_year": 1972,
+    "movie_rating": 9.2,
+    "starring": ["Al Pacino","Marlon Brando","Robert D"],
+    "runtime": 120,
+    "totalReviews": 1800,
+    "director": "Francis Ford Coppola"
+
+   }
+   ])
+
+
+
+db.movies.find()
+
+//To retrieve details of  movie_name =Terminator-2
+db.movies.find( { movie_name: "Terminator-2"} )
+
+// get details of movie which starred  Arnold Schwarzenegger and Sylvester Stallone
+db.movies.find( { starring: { $in: [ "Arnold Schwarzenegger", "Sylvester Stallone" ] } } )
+
+// get details of movie whic starred  Arnold Schwarzenegger and movie_rating greater than or equal 7
+db.movies.find( { starring: "Arnold Schwarzenegger", "movie_rating": { $gte: 7 } } )
+
+// LIST MOVIE DETAILS WHICH STARRED Arnold Schwarzenegger AND Hamilton AND MOVIE_NAME IS Terminator-2 
+db.movies.find(
+    {$and: [ { "starring": { $in: ['Arnold Schwarzenegger','Linda Hamilton'] } }, { movie_name: "Terminator-2"}]}
+)
+
+// LIST MOVIE DETAILS WHICH STARRED Arnold Schwarzenegger AND Hamilton AND MOVIE_NAME IS Terminator-2 AND release_year= 1992 using and operator
+db.movies.find(
+    {$and: [ { "starring": { $in: ['Arnold Schwarzenegger','Linda Hamilton'] } }, { movie_name: "Terminator-2"},{release_year: 1992}]}
+)
+   
+/// LIST MOVIE DETAILS directed by Gabriel M movie released in 2008 and movie_rating greater than or equal to 7
+db.movies.find({
+    $and: [ { "movie_rating": { $gte: 7 } }, { "director": "Gabriel M" }, {release_year: 2008}]
+})
+
+//  LIST MOVIE DETAILS directed by Francis Ford Coppola  or  movie_rating greater than or equal to 8
+db.movies.find( {
+    $or: [ { "movie_rating": { $gt: 8 } }, { director: "Francis Ford Coppola"} ]
+} )
+
+
+// demonstarte working of and operator using 3 conditions 
+db.movies.find( {
+    $and: [ { "movie_rating": { $gte: 7 } }, { director: "James Cameron"},{release_year:1992},{"starring":{$in:['Arnold Schwarzenegger','Linda Hamilton']}} ]
+} )
+
+// list out movie name directed by Joss W and movie_rating above 7
+db.movies.find( {
+    $and: [ { director: "Joss W"},{ "movie_rating": { $gt: 7} } ]
+} )
+
+
+// Demonstarte working of nin operator
+db.movies.find({"starring": { $nin: ['Arnold Schwarzenegger','Sylvester Stallone']}})
+
+
+// Demonstarte working of in operator
+db.movies.find({"starring": { $in: ['Arnold Schwarzenegger','Sylvester Stallone']}})
+
+
+// Demonstarte working of or operator
+db.movies.find({ $or: [{"starring": "Arnold Schwarzenegger"}, {"starring": "Sylvester Stallone"}]})
+
+// Demonstarte working of nor operator
+db.movies.find({ $nor: [{"starring": "Arnold Schwarzenegger"}, {"starring": "Sylvester Stallone"}]})
+
+
+
+//Delete Multiple Documents
+//To delete movie DIRECTED BY Gabriel M" AND STARRING  Will Smith  AND Jade Smith 
+
+db.movies.deleteOne({
+    $and: [ { "director":"Gabriel M"}, { "starring": { $in: ['Will Smith','Jade Smith'] } }]
+})
+
+
+db.movies.find({"director":"Gabriel M"})
+
+// delete movies released between 1950 and 2000
+db.movies.deleteMany({
+    $and: [ {release_year:{$gte:1950}},{release_year:{$lte:2000} }]
+})
+
+
+db.movies.find()
+

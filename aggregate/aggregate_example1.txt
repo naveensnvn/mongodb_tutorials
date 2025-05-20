@@ -1,0 +1,267 @@
+
+
+db.orders.drop()
+
+db.orders.insertMany([
+  { _id: 1, name: "Tables", size: "Medium", price: 190,
+    quantity: 10, date: ISODate("2021-03-13" )},
+
+  { _id: 2, name: "Fans", size: "Medium", price: 200,
+      quantity: 30, date: ISODate( "2022-03-14") },
+
+
+   { _id: 3, name: "Chairs", size: "Large", price: 50,
+        quantity: 20, date: ISODate( "2023-05-14" ) },
+
+
+   { _id: 4, name: "Chairs", size: "Medium", price: 110,
+        quantity: 50, date: ISODate( "2019-06-19" ) },
+
+
+    { _id: 5, name: "Fans", size: "Large", price: 800.70,
+     quantity: 15, date: ISODate( "2015-12-29" ) }, 
+     
+     
+     { _id: 6, name: "Tables", size: "Large", price: 1000.50,
+      quantity: 15, date: ISODate( "2016-12-29" ) },  
+
+
+      { _id: 7, name: "Fans", size: "Large", price: 800.70,
+        quantity: 9, date: ISODate( "2018-11-22" ) },  
+
+
+    { _id: 8, name: "Desks", size: "Large", price: 1050.20,
+          quantity: 9, date: ISODate( "2014-11-22" ) },  
+
+
+    { _id: 9, name: "Desks", size: "Medium", price: 900.70,
+            quantity: 9, date: ISODate( "2013-11-22" ) }     
+    ])
+
+    // query to fetch details whoose size='Large'  using simple match
+   db.orders.aggregate([
+    {
+         // Stage 1: Filter Large size
+      $match:{size:"Large"}
+    }
+  ])
+
+   // query to fetch details whose  name: "Desks"   using simple match and
+   // group by $name amd quantity AND find out sum of qquantity
+   
+
+   db.orders.aggregate([
+    {
+       
+      $match:{ name: "Desks"},
+    },
+    {
+      $group: { _id:"$name",totalQuantity:{$sum:"$quantity" } }
+
+    },
+    {$sort:{totalQuantity:-1}}
+  ])
+
+
+ // query to fetch details whose  name: "Desks"   using simple match and
+   // group by $name amd quantity AND find out sum of qquantity
+   
+
+   db.orders.aggregate([
+    {
+       
+      $match:{},
+    },
+    {
+      $group: { _id:"$name",totalQuantity:{$sum:"$quantity" } }
+
+    },
+    {$sort:{totalQuantity:-1}}
+  ])
+
+
+   // query to fetch details whoose size='Large'  using simple match and
+   // group by $name amd quantity and sort them totalQuantity in desc or asc
+   
+
+  db.orders.aggregate([
+    {
+       
+      $match:{size:"Large"},
+    },
+    {
+      $group: { _id:"$name",totalQuantity:{$sum:"$quantity" } }
+
+    },
+    {$sort:{totalQuantity:-1}}
+  ])
+
+   // query to fetch details whoose product size='Large'  using simple match and
+   // group by $name amd quantity and sort them totalQuantity in desc or asc
+   // and skip 1st 2 records
+
+   db.orders.aggregate([
+    {
+       
+      $match:{size:"Large"},
+    },
+    {
+      $group: { _id:"$name",totalQuantity:{$sum:"$quantity" } }
+
+    },
+    {$sort:{totalQuantity:-1}},
+    {$skip:(2)}
+  ])
+
+ // query to fetch details whoose product  size='Large'and   size='Medium' using simple match and in operator
+
+ //group by name,totalQuantity(sum of quantity),sort total totalQuantity in asc
+
+  db.orders.aggregate([
+    {
+         // Stage 1: Filter Large size
+      $match:{size:{$in:["Large","Medium"]}},
+    },
+    {
+      $group: { _id:"$name",totalQuantity:{$sum:"$quantity" } }
+
+    },
+    {$sort:{totalQuantity:1}},
+   
+  ])
+
+//query to filter prod uct  size='large group by name,totalPrice ie sum of quantity
+//later sort them totalPrice in asc
+  db.orders.aggregate([
+    {
+         // Stage 1: Filter Large size
+      $match:{size:"Large"},
+    },
+    {
+      $group: { _id:"$name",totalPrice:{$sum:"$price" } }
+
+    }
+    ,
+    {
+  
+      $sort: {totalPrice: 1}
+    }
+  ])
+
+
+// list out product details sold between 2020-01-30 and 2022-01-30 uisng aggregate match
+  db.orders.aggregate([
+    // Stage 1: Filter pizza order documents by date range
+    {
+       $match:
+       {
+          "date": { $gte: new ISODate( "2017-01-30" ), $lt: new ISODate( "2022-01-30" ) }
+       }
+    }
+])
+// list out product details sold between 2017-01-30 and 2022-01-30 uisng aggregate ,match
+//display total_price=multiple& quantity,,no_of_units sold using $sum:
+
+db.orders.aggregate(  
+    [
+     {   
+     $match : { date :{$gte: new ISODate("2014-12-05"),$lte:new ISODate("2020-04-13")}}  
+     },  
+       {  
+            $group : {_id : {  name : "$name"}, 
+            totalRevenue: { $sum: { $multiply: [ "$price", "$quantity" ] } },  
+             no_of_products_sold: { $sum: 1 }  }  
+      }  
+   ]  
+ )
+// query to display products display between 2014-12-05 and 2020-04-13 and name =in['Chairs','Tables'] usimg match 
+// match condition involves 2 conditions and display totalRevenue,no_of_quantity,no_of_products_sold and sort totalRevenue desc
+db.orders.aggregate([
+
+  {
+    $match: { "$and": [{ date :{$gte: new ISODate("2014-12-05"),$lte:new ISODate("2020-04-13")}}, {"name": {$in:["Chairs","Tables"]}}]}
+  }, 
+  {  
+    $group : {_id : {  name : "$name"}, 
+    totalRevenue: { $sum: { $multiply: [ "$price", "$quantity" ] } }, 
+    no_of_quantity:{$sum:"$quantity"} ,
+    no_of_products_sold: { $sum: 1 }  }  
+} 
+,
+{$sort:{totalRevenue:-1}}
+])
+
+// query to display products display between 2014-12-05 and 2020-04-13 and name =in['Chairs','Tables'] usimg match  and size ='Medium;
+// match condition involves 2 conditions and display totalRevenue,no_of_quantity,no_of_products_sold and sort totalRevenue desc 
+
+db.orders.aggregate([
+
+    {
+      "$match": { "$and": [{ date :{$gte: new ISODate("2014-12-05"),$lte:new ISODate("2020-04-13")}}, {"name": {$in:["Chairs","Tables"]}},
+    {size:'Medium'}]}
+    }, 
+    {  
+      $group : {_id : {  name : "$name"}, 
+      totalRevenue: { $sum: { $multiply: [ "$price", "$quantity" ] } }, 
+      no_of_quantity:{$sum:"$quantity"} ,
+      no_of_products_sold: { $sum: 1 }  }  
+  } 
+  ,
+  {$sort:{totalRevenue:-1}}
+  ])
+  
+  db.orders.aggregate([
+    {
+      $match: {
+        date: { $gte: new ISODate("2014-12-05"), $lte: new ISODate("2020-04-13") },
+        name: { $in: ["Chairs", "Tables"] }
+      }
+    },
+    {
+      $group: {
+        _id: { name: "$name" },
+        totalRevenue: { $sum: { $multiply: ["$price", "$quantity"] } },
+        no_of_quantity: { $sum: "$quantity" },
+        no_of_products_sold: { $sum: 1 }
+      }
+    },
+    {
+      $match: {
+        totalRevenue: { $gte: 10000, $lte: 16000 }
+      }
+    },
+    {
+      $sort: { totalRevenue: -1 }
+    }
+  ])
+  
+  db.inventory.find( { $and: [ { price: { $ne: 1.99 } }, { price: { $exists: true } } ] } )
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
